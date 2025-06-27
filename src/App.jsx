@@ -1,109 +1,34 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./App.css";
-import Navbar from "./components/Navbar";
-import CartProvider from "./contexts/CartContext";
 import "./index.css";
+
 import { AnimatePresence } from "framer-motion";
+import CartProvider from "./contexts/CartContext";
+import Navbar from "./components/Navbar";
+import AnimatedRoutes from "./AnimatedRoutes";// Move routes logic here (Step 2 below)
 
-// Import your pages
-import Home from "../src/pages/Home";
-import Parts from "../src/pages/Parts";
-import Book from "../src/pages/Book";
-import Cart from "./pages/Carts";
-import CheckOut from "./pages/CheckOut";
-import FloatingButtons from "./components/FloatButton";
-import Contact from "./pages/Contact";
-import CartSummary from "./components/CartSummary";
-import PageWrapper from "./components/PageWrapper";
-
-function AnimatedRoutes() {
+function AppContent() {
   const location = useLocation();
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <>
-              <Home />
-              <FloatingButtons />
-            </>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <PageWrapper>
-              <Home />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/book"
-          element={
-            <PageWrapper>
-              <Book />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <PageWrapper>
-              <CheckOut />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <PageWrapper>
-              <Cart />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/parts"
-          element={
-            <PageWrapper>
-              <Parts />
-            </PageWrapper>
-          }
-        />
+  const isAdminPage = location.pathname.startsWith("/admin");
 
-        <Route
-          path="/contact"
-          element={
-            <PageWrapper>
-              <Contact />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/cartsummary"
-          element={
-            <PageWrapper>
-              <CartSummary />
-            </PageWrapper>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+  return (
+    <>
+      {!isAdminPage && <Navbar />}
+      <AnimatePresence mode="wait">
+        <AnimatedRoutes location={location} key={location.pathname} />
+      </AnimatePresence>
+    </>
   );
 }
 
 function App() {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
     <CartProvider>
-      <Router>
-        <Navbar />
-        <AnimatedRoutes />
-      </Router>
+      {!isAdminPage && <Navbar />}
+      <AnimatedRoutes />
     </CartProvider>
   );
 }

@@ -42,11 +42,12 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-2 text-red-500">Contact Us</h3>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
-              <PhoneCall size={16} /> <a href="tel:+2348000000000">+234 800 000 0000</a>
+              <PhoneCall size={16} /> <a href="tel:+2348000000000">+234 812 101 8756</a>
             </li>
             <li className="flex items-center gap-2">
-              <Mail size={16} /> <a href="mailto:mechanichero@gmail.com">mechanichero@gmail.com</a>
+              <Mail size={16} /> <a href="mailto:Nwobupeter2021@gmail.Com">Nwobupeter2021@gmail.Com</a>
             </li>
+            
             <li className="flex items-center gap-2">
               <Instagram size={16} /> <a href="#">@mechanichero</a>
             </li>

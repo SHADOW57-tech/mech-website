@@ -31,7 +31,7 @@ export default function Navbar() {
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-red-600">
-          MECHANIC HERO
+          SIR P AUTO
         </Link>
 
         {/* Desktop Nav */}
@@ -55,7 +55,9 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+          {/* <Link to="/admin-orders" className="text-red-600 underline">View Orders</Link> */}
         </nav>
+        
 
         {/* Mobile Menu Toggle */}
         <button
@@ -76,7 +78,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               to={link.href}
-              className="block py-2 text-base hover:text-red-500"
+              className="text-center block py-2 text-base hover:text-red-500"
               onClick={() => setIsOpen(false)}
             >
               {link.name}
@@ -87,7 +89,7 @@ export default function Navbar() {
           <Link
             to="/cartsummary"
             onClick={() => setIsOpen(false)}
-            className="block mt-2 py-2 text-base font-medium hover:text-red-500"
+            className="text-center block mt-2 py-2 text-base font-medium hover:text-red-500"
           >
             🛒 View Cart ({cartCount})
           </Link>

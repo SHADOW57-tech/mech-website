@@ -10,14 +10,14 @@ export default function PageWrapper({ children }) {
     gsap.fromTo(
       el,
       { x: 100, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" }
+      { x: 0, opacity: 1, duration: 2, ease: "power2.out" }
     );
 
     return () => {
       gsap.to(el, {
         x: -100,
         opacity: 0,
-        duration: 0.5,
+        duration: 2,
         ease: "power2.in",
       });
     };

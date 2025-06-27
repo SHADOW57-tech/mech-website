@@ -1,0 +1,153 @@
+import {
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom"; // ✅ this line brings in Router
+
+import "./App.css";
+import "./index.css";
+
+import { AnimatePresence } from "framer-motion";
+
+// Context and wrappers
+import CartProvider from "./contexts/CartContext";
+import PageWrapper from "./components/PageWrapper";
+import FloatingButtons from "./components/FloatButton";
+import PrivateRoute from "./components/PrivateRoute";
+
+// Pages
+import Home from "./pages/Home";
+import Parts from "./pages/Parts";
+import Book from "./pages/admin/Book";
+import Cart from "./pages/Carts";
+import CheckOut from "./pages/CheckOut";
+import Contact from "./pages/Contact";
+import CartSummary from "./components/CartSummary";
+import BookingSuccess from "./pages/BookingSuccess";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import BookAndOrder from "./pages/BookAndOrder";
+
+// Admin
+import AdminDashboard from "./pages/admin/AdminDashBoard";
+import AdminOrders from "./pages/admin/AdminOrder";
+import AdminLayout from "./layouts/AdminLayout";
+
+
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={
+            <PageWrapper>
+              <Home />
+              <FloatingButtons />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/parts"
+          element={
+            <PageWrapper>
+              <Parts />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/book"
+          element={
+            <PageWrapper>
+              <Book />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PageWrapper>
+              <CheckOut />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <PageWrapper>
+              <Cart />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/cartsummary"
+          element={
+            <PageWrapper>
+              <CartSummary />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <PageWrapper>
+              <Contact />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/booking-success"
+          element={
+            <PageWrapper>
+              <BookingSuccess />
+            </PageWrapper>
+          }
+        />
+        <Route
+          path="/checkout-success"
+          element={
+            <PageWrapper>
+              <CheckoutSuccess />
+            </PageWrapper>
+          }
+        />
+
+        {/* ✅ New Route: Book & Order Combined */}
+        <Route
+          path="/book-order"
+          element={
+            <PageWrapper>
+              <BookAndOrder />
+            </PageWrapper>
+          }
+        />
+
+        {/* Admin Routes (Protected) */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="bookings" element={<Book />} />
+        </Route>
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+function App() {
+  return (
+    <CartProvider>
+        <AnimatedRoutes />
+    </CartProvider>
+  );
+}
+
+export default App;

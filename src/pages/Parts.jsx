@@ -52,14 +52,14 @@ export default function Parts() {
           <input
             type="text"
             placeholder="Search parts..."
-            className="w-full max-w-md mx-auto block border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full max-w-md mx-auto grid-cols-2 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         {/* Parts Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredParts.length > 0 ? (
             filteredParts.map((part) => (
               <div

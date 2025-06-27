@@ -1,5 +1,8 @@
 import { useCart } from "./../contexts/CartContext";
 import { useState } from "react";
+import { db } from "../firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -10,16 +13,39 @@ export default function Checkout() {
     payment: "cash",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Order Details:", { cart, form });
-    clearCart();
-    alert("Order submitted successfully!");
+
+    if (cart.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
+    const order = {
+      customerName: form.name,
+      address: form.address,
+      phone: form.phone,
+      paymentMethod: form.payment,
+      items: cart,
+      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      placedAt: serverTimestamp(),
+    };
+
+    try {
+      await addDoc(collection(db, "orders"), order);
+      clearCart();
+      navigate("/checkout-success");
+    } catch (err) {
+      console.error("Error placing order:", err);
+      alert("Failed to submit order. Try again.");
+    }
   };
 
   return (
@@ -32,6 +58,7 @@ export default function Checkout() {
           name="name"
           placeholder="Full Name"
           required
+          value={form.name}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
         />
@@ -40,6 +67,7 @@ export default function Checkout() {
           name="address"
           placeholder="Delivery Address"
           required
+          value={form.address}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
         />
@@ -48,11 +76,13 @@ export default function Checkout() {
           name="phone"
           placeholder="Phone Number"
           required
+          value={form.phone}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
         />
         <select
           name="payment"
+          value={form.payment}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
         >

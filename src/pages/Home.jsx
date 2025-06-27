@@ -1,14 +1,15 @@
 import React from "react";
 import HeroSection from "../components/HeroSection";
-import RepairForm from "../components/RepairForm";
-import PartsGrid from "../components/PartsGrid";
+
 import Footer from "../components/Footer";
+import BookAndOrder from "./BookAndOrder";
+import PartsGrid from "../components/PartsGrid";
 
 export default function Home() {
   return (
     <>
       <HeroSection />
-      <RepairForm />
+      <BookAndOrder />
       <PartsGrid />
       <Footer/>
     </>

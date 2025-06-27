@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import heroVideo from "../videos/background-video.mp4";
 
 export default function Hero() {
   const heroRef = useRef(null);
@@ -26,22 +27,41 @@ export default function Hero() {
 
   return (
     <section
-      ref={heroRef}
-      className="bg-gray-900 text-white py-20 px-4 text-center"
+      ref={heroRef} // ✅ Add this line
+      className="relative bg-gray-900 text-white py-20 px-4 text-center overflow-hidden"
+      style={{ height: "80vh" }}
     >
-      <h1 className="text-4xl md:text-5xl font-bold hero-title">
-        Drive In with Problems, <br /> Drive Out with Confidence
-      </h1>
-      <p className="mt-4 text-lg text-gray-300 hero-text">
-        Fast, affordable car repairs and genuine parts in one spot.
-      </p>
-      <div className="mt-6 flex justify-center gap-4">
-        <a href="/book" className="hero-btn bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded">
-          Book Repair
-        </a>
-        <a href="/parts" className="hero-btn bg-white text-black hover:bg-gray-200 px-6 py-3 rounded">
-          Order Parts
-        </a>
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src={heroVideo} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/60 pointer-events-none"></div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <h1 className="text-4xl md:text-5xl font-bold hero-title">
+          Drive In with Problems, <br /> Drive Out with Confidence
+        </h1>
+        <p className="mt-4 text-lg text-gray-300 hero-text">
+          Fast, affordable car repairs and genuine parts in one spot.
+        </p>
+        <div className="mt-6 flex justify-center gap-4">
+          <a href="/book" className="hero-btn bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded">
+            Book Repair
+          </a>
+          <a href="/parts" className="hero-btn bg-white text-black hover:bg-gray-200 px-6 py-3 rounded">
+            Order Parts
+          </a>
+        </div>
       </div>
     </section>
   );
