@@ -3,7 +3,7 @@ import { useState } from "react";
 import { db } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";git add .
+import toast from "react-hot-toast";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
