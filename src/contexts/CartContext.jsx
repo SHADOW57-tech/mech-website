@@ -14,21 +14,23 @@ export default function CartProvider({ children }) {
       const existing = prevCart.find((i) => i.id === item.id);
       if (existing) {
         return prevCart.map((i) =>
-          i.id === item.id ? { ...i, qty: i.qty + 1 } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
-      return [...prevCart, { ...item, qty: 1 }];
+      return [...prevCart, { ...item, quantity: 1 }];
     });
   };
-  const removeFromCart = (id) => {
-  setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-};
-const clearCart = () => setCart([]);
 
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  const clearCart = () => setCart([]);
 
   return (
-    
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, removeFromCart, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );

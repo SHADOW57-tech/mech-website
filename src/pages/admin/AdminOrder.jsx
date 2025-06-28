@@ -1,57 +1,50 @@
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      const q = query(collection(db, "orders"), orderBy("placedAt", "desc"));
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "orders"), (snapshot) => {
+      const liveOrders = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setOrders(data);
-    };
+      setOrders(liveOrders);
+    });
 
-    fetchOrders();
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   return (
-    <section className="py-10 px-4 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">🛒 All Orders</h1>
+    <section className="p-4">
+      <h2 className="text-xl font-bold mb-4">Live Orders</h2>
 
       {orders.length === 0 ? (
         <p>No orders yet.</p>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {orders.map((order) => (
             <div
               key={order.id}
-              className="bg-white p-4 rounded shadow border hover:shadow-md transition"
+              className="border p-4 rounded shadow-sm bg-white flex justify-between items-center"
             >
-              <p><strong>Name:</strong> {order.customerName}</p>
-              <p><strong>Phone:</strong> {order.phone}</p>
-              <p><strong>Address:</strong> {order.address}</p>
-              <p><strong>Payment:</strong> {order.paymentMethod}</p>
-
-              <div className="mt-2">
-                <strong>Items:</strong>
-                <ul className="ml-4 list-disc">
-                  {order.items.map((item, i) => (
-                    <li key={i}>
-                      {item.name} × {item.quantity} — ₦{item.price * item.quantity}
-                    </li>
-                  ))}
-                </ul>
+              <div>
+                <p><strong>Name:</strong> {order.name}</p>
+                <p><strong>Phone:</strong> {order.phone}</p>
+                <p><strong>Status:</strong> {order.completed ? "✅ Done" : "⏳ Pending"}</p>
               </div>
-
-              <p className="mt-2"><strong>Total:</strong> ₦{order.total}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Placed on: {order.placedAt?.toDate().toLocaleString() || "Unknown"}
-              </p>
+              {/* Example Buttons */}
+              <div className="flex gap-2">
+                <button className="bg-green-600 text-white px-3 py-1 rounded text-sm">
+                  Mark as Completed
+                </button>
+                <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>

@@ -19,7 +19,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & About */}
         <div>
-          <h2 className="text-2xl font-bold text-red-600 mb-2">Mechanic Hero</h2>
+          <h2 className="text-2xl font-bold text-red-600 mb-2">SIR P AUTO</h2>
           <p className="text-sm text-gray-300">
             Reliable repairs. Quality parts. Fast service. We bring your car back to life with ease.
           </p>

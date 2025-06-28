@@ -3,6 +3,7 @@ import { useState } from "react";
 import { db } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";git add .
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -42,9 +43,11 @@ export default function Checkout() {
       await addDoc(collection(db, "orders"), order);
       clearCart();
       navigate("/checkout-success");
+      toast.success("Order placed successfully!");
     } catch (err) {
       console.error("Error placing order:", err);
       alert("Failed to submit order. Try again.");
+      toast.error("Failed to submit order. Try again.");
     }
   };
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MapComponent from "../components/MapComponent";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -72,6 +73,10 @@ export default function Contact() {
           </button>
         </form>
       </div>
+         <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Our Workshop Location</h2>
+      <MapComponent />
+    </div>
     </section>
   );
 }

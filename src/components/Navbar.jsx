@@ -18,11 +18,12 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Book Repair", href: "/book" },
-    { name: "Order Parts", href: "/parts" },
-    { name: "Contact", href: "/contact" },
-  ];
+  { name: "Home", href: "/" },
+  { name: "Book Repair", href: "/book" },
+  { name: "Order Parts", href: "/parts" },
+  { name: "My Orders", href: "/my-orders" }, 
+  { name: "Contact", href: "/contact" },
+];
 
   const cartCount = Array.isArray(cart) ? cart.reduce((acc, item) => acc + item.qty, 0) : 0;
 

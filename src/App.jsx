@@ -5,7 +5,8 @@ import "./index.css";
 import { AnimatePresence } from "framer-motion";
 import CartProvider from "./contexts/CartContext";
 import Navbar from "./components/Navbar";
-import AnimatedRoutes from "./AnimatedRoutes";// Move routes logic here (Step 2 below)
+import AnimatedRoutes from "./AnimatedRoutes";
+import { Toaster } from "react-hot-toast";
 
 function AppContent() {
   const location = useLocation();
@@ -13,6 +14,7 @@ function AppContent() {
 
   return (
     <>
+     <Toaster position="top-right" />
       {!isAdminPage && <Navbar />}
       <AnimatePresence mode="wait">
         <AnimatedRoutes location={location} key={location.pathname} />

@@ -18,7 +18,7 @@ import PrivateRoute from "./components/PrivateRoute";
 // Pages
 import Home from "./pages/Home";
 import Parts from "./pages/Parts";
-import Book from "./pages/admin/Book";
+import Book from "./pages/Book";
 import Cart from "./pages/Carts";
 import CheckOut from "./pages/CheckOut";
 import Contact from "./pages/Contact";
@@ -26,11 +26,14 @@ import CartSummary from "./components/CartSummary";
 import BookingSuccess from "./pages/BookingSuccess";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import BookAndOrder from "./pages/BookAndOrder";
+import MyOrders from "./pages/MyOrder";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
 import AdminOrders from "./pages/admin/AdminOrder";
 import AdminLayout from "./layouts/AdminLayout";
+import AdminBookings from "./pages/admin/AdminBooking";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 
 function AnimatedRoutes() {
@@ -123,6 +126,14 @@ function AnimatedRoutes() {
             </PageWrapper>
           }
         />
+        <Route
+  path="/my-orders"
+  element={
+    <PageWrapper>
+      <MyOrders />
+    </PageWrapper>
+  }
+/>
 
         {/* Admin Routes (Protected) */}
         <Route
@@ -133,6 +144,8 @@ function AnimatedRoutes() {
             </PrivateRoute>
           }
         >
+          <Route path="login" element={<AdminLogin />} />
+          <Route path="bookings" element={<AdminBookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="bookings" element={<Book />} />
