@@ -2,7 +2,8 @@ import {
   Routes,
   Route,
   useLocation,
-} from "react-router-dom"; // ✅ this line brings in Router
+} from "react-router-dom";
+import { CartProvider } from "./contexts/CartContext"; // ✅ 
 
 import "./App.css";
 import "./index.css";
@@ -10,7 +11,6 @@ import "./index.css";
 import { AnimatePresence } from "framer-motion";
 
 // Context and wrappers
-import CartProvider from "./contexts/CartContext";
 import PageWrapper from "./components/PageWrapper";
 import FloatingButtons from "./components/FloatButton";
 import PrivateRoute from "./components/PrivateRoute";
@@ -27,6 +27,8 @@ import BookingSuccess from "./pages/BookingSuccess";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import BookAndOrder from "./pages/BookAndOrder";
 import MyOrders from "./pages/MyOrder";
+import SelectPayment from "./pages/SelectPayment";
+import Success from "./pages/Success";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
@@ -109,6 +111,15 @@ function AnimatedRoutes() {
           }
         />
         <Route
+  path="/success"
+  element={
+    <PageWrapper>
+      <Success />
+    </PageWrapper>
+  }
+/>
+
+        <Route
           path="/checkout-success"
           element={
             <PageWrapper>
@@ -131,6 +142,14 @@ function AnimatedRoutes() {
   element={
     <PageWrapper>
       <MyOrders />
+    </PageWrapper>
+  }
+/>
+<Route
+  path="/select-payment"
+  element={
+    <PageWrapper>
+      <SelectPayment />
     </PageWrapper>
   }
 />

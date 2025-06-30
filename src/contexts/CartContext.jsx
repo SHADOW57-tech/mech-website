@@ -1,37 +1,67 @@
-import React, { createContext, useContext, useState } from "react";
+// src/contexts/CartContext.jsx
+import { createContext, useContext, useEffect, useState } from "react";
+import { db } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const CartContext = createContext();
+export const useCart = () => useContext(CartContext);
 
-export function useCart() {
-  return useContext(CartContext);
-}
+const userId = "guest-1234"; // 🔁 Use auth.uid or anonymous ID
 
-export default function CartProvider({ children }) {
+export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  const addToCart = (item) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((i) => i.id === item.id);
-      if (existing) {
-        return prevCart.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
+  // ✅ Sync cart to Firebase on change
+  useEffect(() => {
+    if (cart.length > 0) {
+      const cartRef = doc(db, "carts", userId);
+      setDoc(cartRef, { items: cart }, { merge: true });
+    }
+  }, [cart]);
+
+  // ✅ Load cart from Firebase on startup
+  useEffect(() => {
+    const loadCart = async () => {
+      const cartRef = doc(db, "carts", userId);
+      const snap = await getDoc(cartRef);
+      if (snap.exists()) {
+        setCart(snap.data().items || []);
       }
-      return [...prevCart, { ...item, quantity: 1 }];
+    };
+    loadCart();
+  }, []);
+
+  const addToCart = (item) => {
+    setCart((prev) => {
+      const exists = prev.find((i) => i.id === item.id);
+      if (exists) {
+        return prev.map((i) =>
+          i.id === item.id
+            ? { ...i, quantity: (i.quantity || 1) + 1 }
+            : i
+        );
+      } else {
+        return [...prev, { ...item, quantity: 1 }];
+      }
     });
   };
 
+  const updateCartItem = (id, newItem) => {
+    setCart((prev) => prev.map((i) => (i.id === id ? newItem : i)));
+  };
+
   const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
   const clearCart = () => setCart([]);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart }}
+      value={{ cart, addToCart, updateCartItem, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>
   );
-}
+};
+CartProvider.displayName = "CartContext";

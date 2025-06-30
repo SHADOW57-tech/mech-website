@@ -3,7 +3,7 @@ import "./App.css";
 import "./index.css";
 
 import { AnimatePresence } from "framer-motion";
-import CartProvider from "./contexts/CartContext";
+import { CartProvider } from "./contexts/CartContext";
 import Navbar from "./components/Navbar";
 import AnimatedRoutes from "./AnimatedRoutes";
 import { Toaster } from "react-hot-toast";

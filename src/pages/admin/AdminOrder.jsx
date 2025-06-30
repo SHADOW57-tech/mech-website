@@ -1,54 +1,54 @@
+// /pages/admin/AdminOrders.jsx
 import { useEffect, useState } from "react";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { collection, onSnapshot } from "firebase/firestore";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "orders"), (snapshot) => {
-      const liveOrders = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOrders(liveOrders);
-    });
+  const fetchOrders = async () => {
+    const querySnapshot = await getDocs(collection(db, "orders"));
+    const fetchedOrders = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setOrders(fetchedOrders.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds));
+  };
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
+  const markAsDelivered = async (id) => {
+    await updateDoc(doc(db, "orders", id), {
+      status: "delivered",
+    });
+    fetchOrders(); // Refresh
+  };
+
+  useEffect(() => {
+    fetchOrders();
   }, []);
 
   return (
-    <section className="p-4">
-      <h2 className="text-xl font-bold mb-4">Live Orders</h2>
-
-      {orders.length === 0 ? (
-        <p>No orders yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="border p-4 rounded shadow-sm bg-white flex justify-between items-center"
+    <div className="p-6 max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">📦 Admin Orders</h2>
+      <div className="space-y-4">
+        {orders.map((order) => (
+          <div key={order.id} className="border p-4 rounded shadow bg-white">
+            <p><strong>Customer:</strong> {order.customerName}</p>
+            <p><strong>Amount:</strong> ₦{order.amount?.toLocaleString()}</p>
+            <p><strong>Status:</strong> 
+              <span className={`ml-2 font-semibold ${order.status === "paid" ? "text-green-600" : order.status === "pending" ? "text-yellow-600" : "text-blue-600"}`}>
+                {order.status}
+              </span>
+            </p>
+            <button
+              onClick={() => markAsDelivered(order.id)}
+              className="mt-2 px-3 py-1 text-sm bg-blue-600 text-white rounded"
+              disabled={order.status === "delivered"}
             >
-              <div>
-                <p><strong>Name:</strong> {order.name}</p>
-                <p><strong>Phone:</strong> {order.phone}</p>
-                <p><strong>Status:</strong> {order.completed ? "✅ Done" : "⏳ Pending"}</p>
-              </div>
-              {/* Example Buttons */}
-              <div className="flex gap-2">
-                <button className="bg-green-600 text-white px-3 py-1 rounded text-sm">
-                  Mark as Completed
-                </button>
-                <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
+              Mark as Delivered
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
