@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCart } from "../contexts/CartContext";
 import { gsap } from "gsap";
+import toast from "react-hot-toast";
 
 export default function Parts() {
   const { addToCart, cart } = useCart();
@@ -47,8 +48,9 @@ export default function Parts() {
 
   const handleAddToCart = (part) => {
     addToCart({ ...part, quantity: 1 });
+    toast.success("Item added successfully to cart!");
 
-    // ✅ Optional: Animate cart info on add
+    // Optional: Animate cart info on add
     if (cartRef.current) {
       gsap.fromTo(
         cartRef.current,
@@ -108,7 +110,7 @@ export default function Parts() {
           )}
         </div>
 
-        {/* Floating Cart Info */}
+         {/* Floating Cart Info */}
         {cart.length > 0 && (
           <div
             ref={cartRef}

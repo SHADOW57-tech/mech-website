@@ -60,7 +60,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <Link to="/cartsummary" className="relative flex items-center">
+          <Link to="/cart" className="relative flex items-center">
             <ShoppingCart className="w-6 h-6 text-white hover:text-red-500 transition" />
             {cartCount > 0 && (
               <span
@@ -99,7 +99,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            to="/cartsummary"
+            to="/cart"
             onClick={() => setIsOpen(false)}
             className="text-center block mt-2 py-2 text-base font-medium hover:text-red-500"
           >

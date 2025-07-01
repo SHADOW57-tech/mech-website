@@ -3,6 +3,7 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCart } from "../contexts/CartContext";
+import toast from "react-hot-toast";
 
 export default function Carts() {
   const { cart, updateCartItem, removeFromCart } = useCart();
@@ -15,6 +16,7 @@ export default function Carts() {
     const item = cart.find((i) => i.id === id);
     updateCartItem(id, { ...item, quantity: (item.quantity || 1) + 1 });
     setAnimKey((prev) => prev + 1);
+    toast.success("Increased quantity!");
   };
 
   const decreaseQty = (id) => {
@@ -22,6 +24,7 @@ export default function Carts() {
     if (item.quantity > 1) {
       updateCartItem(id, { ...item, quantity: item.quantity - 1 });
       setAnimKey((prev) => prev + 1);
+      toast.success("Decreased quantity!");
     }
   };
 
@@ -29,6 +32,7 @@ export default function Carts() {
   const handleRemove = (id) => {
     removeFromCart(id);
     setAnimKey((prev) => prev + 1);
+    toast.success("Item removed from cart!");
   };
 
   // ✅ Calculations

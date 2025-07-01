@@ -1,127 +1,112 @@
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
+import gsap from "gsap";
 
 export default function MyOrders() {
-  const [userPhone, setUserPhone] = useState("");
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const userEmail = "customer@example.com"; // Replace this with real auth email if available
 
-  // Load saved phone from localStorage
   useEffect(() => {
-    const savedPhone = localStorage.getItem("userPhone");
-    if (savedPhone) {
-      setUserPhone(savedPhone);
-      fetchOrders(savedPhone);
-    }
+    const fetchOrders = async () => {
+      try {
+        const q = query(
+          collection(db, "payments"),
+          where("email", "==", userEmail),
+          orderBy("createdAt", "desc")
+        );
+        const snapshot = await getDocs(q);
+        const orderList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setOrders(orderList);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
-  const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    setUserPhone(value);
-    localStorage.setItem("userPhone", value);
-  };
-
-  const fetchOrders = async (phone) => {
-    setLoading(true);
-    try {
-      const q = query(collection(db, "orders"), where("phone", "==", phone));
-      const snapshot = await getDocs(q);
-      const fetchedOrders = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOrders(fetchedOrders);
-    } catch (err) {
-      console.error("Error fetching orders:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancel = async (orderId) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
-    if (!confirmCancel) return;
-
-    try {
-      const orderRef = doc(db, "orders", orderId);
-      await updateDoc(orderRef, { status: "Cancelled" });
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? { ...order, status: "Cancelled" } : order
-        )
-      );
-    } catch (err) {
-      console.error("Failed to cancel order:", err);
-    }
-  };
+  useEffect(() => {
+    gsap.from(".order-card", {
+      opacity: 0,
+      y: 30,
+      duration: 0.5,
+      stagger: 0.1,
+    });
+  }, [orders]);
 
   return (
-    <section className="py-12 px-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center text-red-600">📦 My Orders</h2>
-
-      <div className="mb-6">
-        <input
-          type="tel"
-          placeholder="Enter your phone number"
-          value={userPhone}
-          onChange={handlePhoneChange}
-          className="border px-4 py-2 w-full rounded mb-2"
-        />
-        <button
-          onClick={() => fetchOrders(userPhone)}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 w-full"
-        >
-          View My Orders
-        </button>
-      </div>
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-2xl font-bold text-red-600 mb-6">📦 My Orders</h2>
 
       {loading ? (
-        <p className="text-center text-gray-600">Loading orders...</p>
+        <p className="text-center text-gray-500">Loading orders...</p>
       ) : orders.length === 0 ? (
-        <p className="text-center text-gray-600">No orders found.</p>
+        <p className="text-gray-500">You have not placed any orders yet.</p>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
           {orders.map((order) => (
-            <li
+            <div
               key={order.id}
-              className="border rounded p-4 shadow bg-white space-y-2"
+              className="order-card border p-4 rounded-lg shadow-md bg-white hover:shadow-lg transition duration-300 cursor-pointer"
+              onClick={() => setSelectedOrder(order)}
             >
-              {order.imageUrl && (
-                <img
-                  src={order.imageUrl}
-                  alt="Order"
-                  className="w-full h-40 object-cover rounded"
-                />
-              )}
-              <p><strong>Item:</strong> {order.partName || "N/A"}</p>
-              <p><strong>Qty:</strong> {order.quantity || 1}</p>
-              <p><strong>Unit Price:</strong> ₦{order.price?.toLocaleString() || "N/A"}</p>
-              <p><strong>Total:</strong> ₦{(order.price * order.quantity)?.toLocaleString()}</p>
-              <p><strong>Status:</strong> <span className="text-red-600">{order.status || "Pending"}</span></p>
-              <p><strong>Ordered At:</strong>{" "}
-                {order.createdAt?.seconds
-                  ? new Date(order.createdAt.seconds * 1000).toLocaleString()
-                  : "N/A"}
-              </p>
-
-              <div className="flex gap-4 mt-2">
-                {order.status !== "Completed" && order.status !== "Cancelled" && (
-                  <button
-                    onClick={() => handleCancel(order.id)}
-                    className="text-red-600 underline hover:font-semibold"
-                  >
-                    Cancel Order
-                  </button>
-                )}
-                <button className="text-blue-600 underline hover:font-semibold">
-                  Track
-                </button>
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <p className="font-semibold text-sm">Order ID: {order.orderId}</p>
+                  <p className="text-xs text-gray-500">
+                    {order.createdAt?.toDate().toLocaleString() || "No date"}
+                  </p>
+                </div>
+                <span
+                  className={`px-2 py-1 text-xs rounded-full font-semibold ${
+                    order.status === "successful"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {order.status}
+                </span>
               </div>
-            </li>
+              <p className="text-sm text-gray-600">
+                {order.cart.length} item(s) - ₦{order.amount.toLocaleString()}
+              </p>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
-    </section>
+
+      {/* Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative shadow-xl">
+            <button
+              className="absolute top-2 right-3 text-red-500 font-bold text-xl"
+              onClick={() => setSelectedOrder(null)}
+            >
+              ✖
+            </button>
+            <h3 className="text-xl font-bold mb-4 text-red-600">Order Details</h3>
+            <p className="text-sm text-gray-600 mb-2">Order ID: {selectedOrder.orderId}</p>
+            <p className="text-sm text-gray-600 mb-4">Ref: {selectedOrder.reference}</p>
+            <ul className="text-sm text-gray-700 space-y-1 mb-4">
+              {selectedOrder.cart.map((item, index) => (
+                <li key={index}>- {item.name} x{item.quantity || item.qty}</li>
+              ))}
+            </ul>
+            <p className="font-bold text-right text-green-700">
+              Total: ₦{selectedOrder.amount.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
