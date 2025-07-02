@@ -1,19 +1,8 @@
 import {
   Routes,
   Route,
-  useLocation,
 } from "react-router-dom";
-import { CartProvider } from "./contexts/CartContext"; // ✅ 
-
-import "./App.css";
-import "./index.css";
-
 import { AnimatePresence } from "framer-motion";
-
-// Context and wrappers
-import PageWrapper from "./components/PageWrapper";
-import FloatingButtons from "./components/FloatButton";
-import PrivateRoute from "./components/PrivateRoute";
 
 // Pages
 import Home from "./pages/Home";
@@ -37,10 +26,12 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminBookings from "./pages/admin/AdminBooking";
 import AdminLogin from "./pages/admin/AdminLogin";
 
+// Layouts
+import PageWrapper from "./components/PageWrapper";
+import FloatingButtons from "./components/FloatButton";
+import PrivateRoute from "./components/PrivateRoute";
 
-function AnimatedRoutes() {
-  const location = useLocation();
-
+export default function AnimatedRoutes({ location }) {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -54,107 +45,20 @@ function AnimatedRoutes() {
             </PageWrapper>
           }
         />
-        <Route
-          path="/parts"
-          element={
-            <PageWrapper>
-              <Parts />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/book"
-          element={
-            <PageWrapper>
-              <Book />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <PageWrapper>
-              <CheckOut />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <PageWrapper>
-              <Cart />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/cartsummary"
-          element={
-            <PageWrapper>
-              <CartSummary />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <PageWrapper>
-              <Contact />
-            </PageWrapper>
-          }
-        />
-        <Route
-          path="/booking-success"
-          element={
-            <PageWrapper>
-              <BookingSuccess />
-            </PageWrapper>
-          }
-        />
-        <Route
-  path="/success"
-  element={
-    <PageWrapper>
-      <Success />
-    </PageWrapper>
-  }
-/>
+        <Route path="/parts" element={<PageWrapper><Parts /></PageWrapper>} />
+        <Route path="/book" element={<PageWrapper><Book /></PageWrapper>} />
+        <Route path="/checkout" element={<PageWrapper><CheckOut /></PageWrapper>} />
+        <Route path="/cart" element={<PageWrapper><Cart /></PageWrapper>} />
+        <Route path="/cartsummary" element={<PageWrapper><CartSummary /></PageWrapper>} />
+        <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
+        <Route path="/booking-success" element={<PageWrapper><BookingSuccess /></PageWrapper>} />
+        <Route path="/checkout-success" element={<PageWrapper><CheckoutSuccess /></PageWrapper>} />
+        <Route path="/book-order" element={<PageWrapper><BookAndOrder /></PageWrapper>} />
+        <Route path="/my-orders" element={<PageWrapper><MyOrders /></PageWrapper>} />
+        <Route path="/select-payment" element={<PageWrapper><SelectPayment /></PageWrapper>} />
+        <Route path="/success" element={<PageWrapper><Success /></PageWrapper>} />
 
-        <Route
-          path="/checkout-success"
-          element={
-            <PageWrapper>
-              <CheckoutSuccess />
-            </PageWrapper>
-          }
-        />
-
-        {/* ✅ New Route: Book & Order Combined */}
-        <Route
-          path="/book-order"
-          element={
-            <PageWrapper>
-              <BookAndOrder />
-            </PageWrapper>
-          }
-        />
-        <Route
-  path="/my-orders"
-  element={
-    <PageWrapper>
-      <MyOrders />
-    </PageWrapper>
-  }
-/>
-<Route
-  path="/select-payment"
-  element={
-    <PageWrapper>
-      <SelectPayment />
-    </PageWrapper>
-  }
-/>
-
-        {/* Admin Routes (Protected) */}
+        {/* Admin Routes */}
         <Route
           path="/admin"
           element={
@@ -167,19 +71,8 @@ function AnimatedRoutes() {
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="orders" element={<AdminOrders />} />
-          <Route path="bookings" element={<Book />} />
         </Route>
       </Routes>
     </AnimatePresence>
   );
 }
-
-function App() {
-  return (
-    <CartProvider>
-        <AnimatedRoutes />
-    </CartProvider>
-  );
-}
-
-export default App;

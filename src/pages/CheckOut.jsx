@@ -7,6 +7,7 @@ import { CreditCard, Home, Banknote } from "lucide-react";
 import { db, serverTimestamp } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
 import { sendOrderEmail } from "../utility/SendOrderEmail";
+import { getAuth } from "firebase/auth";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -36,7 +37,17 @@ export default function Checkout() {
     { id: "bank", label: "Bank Transfer", icon: <Banknote size={22} /> },
   ];
 
- const handleOrderSubmit = async () => {
+ 
+const handleOrderSubmit = async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (!user) {
+    toast.error("⚠️ Please log in to complete your purchase");
+    navigate("/login");
+    return;
+  }
+
   if (!selectedMethod) {
     toast.error("Please select a payment method");
     return;
@@ -50,7 +61,7 @@ export default function Checkout() {
     }
 
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X", // 🔁 Replace with real key
+      public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X",
       tx_ref: orderId,
       amount: total,
       currency: "NGN",
@@ -62,7 +73,7 @@ export default function Checkout() {
       customizations: {
         title: "ICS AutoFix",
         description: "Payment for auto parts/service",
-        logo: "https://your-logo.com/logo.png", // Optional
+        logo: "https://your-logo.com/logo.png",
       },
       callback: async function (response) {
         if (response.status === "successful") {
@@ -94,10 +105,11 @@ export default function Checkout() {
         toast("Payment closed");
       },
     });
-    return;
+
+    return; // 🛑 Stop here, card handled above
   }
 
-  // 👉 For other payment methods
+  // 👇 Other methods (opay, delivery, bank)
   setLoading(true);
   try {
     const orderData = {
