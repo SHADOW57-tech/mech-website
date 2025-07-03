@@ -1,22 +1,31 @@
 import { useState, useEffect } from "react";
 import { CreditCard, Home, Banknote } from "lucide-react";
-import { FaMoneyBillWave } from "react-icons/fa"; // ✅ Use this instead of SiOpay
+import { FaMoneyBillWave } from "react-icons/fa";
 import { useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { db, serverTimestamp } from "../firebase";
+import { db, serverTimestamp, auth } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
 import toast from "react-hot-toast";
-import { sendOrderEmail } from "../utility/SendOrderEmail"; // Optional: email sending
+import { sendOrderEmail } from "../utility/SendOrderEmail";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function SelectPayment() {
   const { cart, clearCart } = useCart();
   const navigate = useNavigate();
   const [selected, setSelected] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const email = "customer@example.com";
-  const customerName = "John Doe";
   const orderId = `ORD-${Date.now()}`;
+  const email = user?.email || "no-email@unknown.com";
+  const customerName = user?.displayName || "Valued Customer";
 
   const paymentOptions = [
     { id: "opay", label: "Opay", icon: <FaMoneyBillWave size={24} className="text-green-600" /> },
@@ -25,7 +34,6 @@ export default function SelectPayment() {
     { id: "bank", label: "Bank Transfer", icon: <Banknote size={24} /> },
   ];
 
-  // Load Flutterwave script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.flutterwave.com/v3.js";
@@ -39,12 +47,10 @@ export default function SelectPayment() {
       return;
     }
 
-    if (selected === "card") {
-      return payWithFlutterwave();
-    }
+    if (selected === "card") return payWithFlutterwave();
 
-    // For Opay, Delivery, Bank Transfer
     toast.success("✅ Order placed!");
+
     navigate("/checkout-success", {
       state: {
         order: {
@@ -60,7 +66,6 @@ export default function SelectPayment() {
       },
     });
 
-    // Optional: send email confirmation
     sendOrderEmail({
       customerName,
       email,
@@ -81,7 +86,7 @@ export default function SelectPayment() {
     }
 
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X", // 🔁 Replace
+      public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X",
       tx_ref: orderId,
       amount: totalAmount,
       currency: "NGN",
@@ -121,6 +126,7 @@ export default function SelectPayment() {
           });
 
           clearCart();
+
           navigate("/checkout-success", {
             state: {
               order: {
@@ -161,14 +167,6 @@ export default function SelectPayment() {
           </div>
         ))}
       </div>
-
-      {/* Optional: Show extra info based on method */}
-      {selected === "opay" && (
-        <div className="mt-4 bg-green-50 p-4 rounded-xl">
-          <p>Send to Opay Account: <strong>08012345678</strong></p>
-          <img src="/qrcode.png" alt="Opay QR" className="w-24 h-24 mt-2 rounded border" />
-        </div>
-      )}
 
       {selected === "bank" && (
         <div className="mt-4 bg-yellow-50 p-4 rounded-xl">

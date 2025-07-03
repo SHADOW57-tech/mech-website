@@ -6,14 +6,17 @@ import {
   GoogleAuthProvider,
   setPersistence,
   browserLocalPersistence,
+  browserSessionPersistence,
 } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { FirebaseError } from "firebase/app";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,12 +28,30 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await setPersistence(auth, browserLocalPersistence); // ✅ Remember Me
-      await signInWithEmailAndPassword(auth, email, password);
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("🎉 Logged in as:", user.displayName || user.email);
       toast.success("🎉 Login successful!");
       navigate("/");
     } catch (err) {
-      toast.error("❌ " + err.message);
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
+          case "auth/user-not-found":
+            toast.error("❌ User not found");
+            break;
+          case "auth/wrong-password":
+            toast.error("❌ Incorrect password");
+            break;
+          case "auth/invalid-email":
+            toast.error("❌ Invalid email");
+            break;
+          default:
+            toast.error("❌ " + err.message);
+        }
+      } else {
+        toast.error("❌ Login error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -39,7 +60,9 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("🎉 Google user:", user.displayName || user.email);
       toast.success("🎉 Logged in with Google!");
       navigate("/");
     } catch (err) {
@@ -66,6 +89,19 @@ export default function Login() {
         placeholder="Password"
         className="border p-3 w-full mb-4 rounded"
       />
+
+      <div className="flex items-center mb-4">
+        <input
+          id="remember"
+          type="checkbox"
+          checked={rememberMe}
+          onChange={() => setRememberMe(!rememberMe)}
+          className="mr-2"
+        />
+        <label htmlFor="remember" className="text-sm text-gray-700">
+          Remember Me
+        </label>
+      </div>
 
       <button
         onClick={handleLogin}

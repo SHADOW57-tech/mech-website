@@ -8,30 +8,39 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
-    if (!email || !password || !name) {
-      toast.error("Please fill all fields");
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedName || !trimmedEmail || !password) {
+      toast.error("Please fill in all fields");
       return;
     }
 
+    setLoading(true);
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
       await updateProfile(userCredential.user, {
-        displayName: name,
+        displayName: trimmedName,
       });
 
       toast.success("🎉 Signup successful!");
-      navigate("/"); // redirect to homepage
+      navigate("/");
     } catch (err) {
-      toast.error("Signup failed ❌ " + err.message);
+      toast.error("❌ Signup failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="max-w-md mx-auto p-6 mt-12">
       <h2 className="text-2xl font-bold mb-4 text-red-600">Create an Account</h2>
+
       <input
         type="text"
         value={name}
@@ -53,8 +62,15 @@ export default function Signup() {
         placeholder="Password"
         className="border p-2 w-full mb-4"
       />
-      <button onClick={handleSignup} className="bg-red-600 text-white px-4 py-2 w-full">
-        Sign Up
+
+      <button
+        onClick={handleSignup}
+        disabled={loading}
+        className={`bg-red-600 text-white px-4 py-2 w-full rounded ${
+          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-red-700"
+        }`}
+      >
+        {loading ? "Creating account..." : "Sign Up"}
       </button>
 
       <p

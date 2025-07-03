@@ -11,20 +11,34 @@ import emailjs from "emailjs-com";
  * @param {Array} param0.cart - Array of cart items
  * @param {string} param0.method - Payment method used
  */
-export const sendOrderEmail = async ({ customerName, email, orderId, amount, cart, method }) => {
+export const sendOrderEmail = async ({
+  customerName,
+  email,
+  orderId,
+  amount,
+  cart,
+  method,
+}) => {
   try {
     await emailjs.send(
-      "service_xxxxxxxx", // ✅ Replace with your actual EmailJS service ID
-      "template_xxxxxxx", // ✅ Replace with your actual EmailJS template ID
+      "service_2cmjqck",      // Your EmailJS service ID
+      "template_x2fo91s",     // Your EmailJS template ID
       {
         customer_name: customerName,
         email: email,
         order_id: orderId,
+        cart_items: cart
+          .map(
+            (item) =>
+              `${item.name} x${item.quantity}\n₦${(
+                item.price * item.quantity
+              ).toLocaleString()}`
+          )
+          .join("\n\n"),
         amount: `₦${amount.toLocaleString()}`,
-        cart_items: cart.map(item => `${item.name} x${item.quantity}`).join("\n"),
         payment_method: method,
       },
-      "hJSZS0F5Mq_pmsQTg" // ✅ Replace with your actual EmailJS public key
+      "hJSZS0F5Mq_pmsQTg"     // Your EmailJS public key
     );
     console.log("📧 Email sent successfully!");
   } catch (err) {

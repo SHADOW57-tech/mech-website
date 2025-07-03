@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const { cart } = useCart();
-  const badgeRef = useRef(null); // 👈 for animation
+  const badgeRef = useRef(null);
   const headerRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     gsap.fromTo(
@@ -22,7 +22,6 @@ export default function Navbar() {
     ? cart.reduce((acc, item) => acc + (item.quantity || item.qty || 1), 0)
     : 0;
 
-  // 👇 Animate cart badge when cartCount changes
   useEffect(() => {
     if (cartCount > 0 && badgeRef.current) {
       gsap.fromTo(
@@ -35,78 +34,72 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Book Repair", href: "/book" },
-    { name: "Order Parts", href: "/parts" },
-    { name: "My Orders", href: "/my-orders" },
+    { name: "Book", href: "/book" },
+    { name: "Parts", href: "/parts" },
+    { name: "Orders", href: "/my-orders" },
     { name: "Contact", href: "/contact" },
   ];
 
   return (
-    <header ref={headerRef} className="bg-black text-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="text-2xl font-bold text-red-600">
-          SIR P AUTO
-        </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6 text-base font-medium">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              className="hover:text-red-500 transition"
-            >
-              {link.name}
-            </Link>
-          ))}
-
-          <Link to="/cart" className="relative flex items-center">
-            <ShoppingCart className="w-6 h-6 text-white hover:text-red-500 transition" />
-            {cartCount > 0 && (
-              <span
-                ref={badgeRef}
-                className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full"
-              >
-                {cartCount}
-              </span>
-            )}
+    <>
+      {/* Top desktop navbar */}
+      <header ref={headerRef} className="bg-black text-white shadow-md sticky top-0 z-50">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3">
+          <Link to="/" className="text-2xl font-bold text-red-600">
+            SIR P AUTO
           </Link>
-        </nav>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
+          {/* Desktop navigation */}
+          <nav className="hidden md:flex items-center gap-6 text-base font-medium">
+            {navLinks.map((link) => (
+              <Link key={link.name} to={link.href} className="hover:text-red-500 transition">
+                {link.name}
+              </Link>
+            ))}
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div id="mobile-menu" className="md:hidden bg-black px-4 pb-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              className="text-center block py-2 text-base hover:text-red-500"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.name}
+            <Link to="/cart" className="relative flex items-center">
+              <ShoppingCart className="w-6 h-6 text-white hover:text-red-500 transition" />
+              {cartCount > 0 && (
+                <span
+                  ref={badgeRef}
+                  className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full"
+                >
+                  {cartCount}
+                </span>
+              )}
             </Link>
-          ))}
-          <Link
-            to="/cart"
-            onClick={() => setIsOpen(false)}
-            className="text-center block mt-2 py-2 text-base font-medium hover:text-red-500"
-          >
-            🛒 View Cart ({cartCount})
-          </Link>
+          </nav>
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* Fixed bottom nav bar for mobile only */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 text-white flex justify-around items-center py-2 z-50 md:hidden">
+        {navLinks.map((link) => (
+          <Link
+            key={link.name}
+            to={link.href}
+            className={`flex-1 text-center text-sm hover:text-red-500 ${
+              location.pathname === link.href ? "text-red-500 font-semibold" : ""
+            }`}
+          >
+            {link.name}
+          </Link>
+        ))}
+        <Link
+          to="/cart"
+          className="flex-1 text-center text-sm relative hover:text-red-500"
+        >
+          Cart
+          {cartCount > 0 && (
+            <span
+              ref={badgeRef}
+              className="absolute top-0 right-4 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full"
+            >
+              {cartCount}
+            </span>
+          )}
+        </Link>
+      </nav>
+    </>
   );
 }
