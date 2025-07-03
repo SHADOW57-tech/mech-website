@@ -30,6 +30,8 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import PageWrapper from "./components/PageWrapper";
 import FloatingButtons from "./components/FloatButton";
 import PrivateRoute from "./components/PrivateRoute";
+import Login from "./pages/LoginPage";
+import Signup from "./pages/SighUp";
 
 export default function AnimatedRoutes({ location }) {
   return (
@@ -57,6 +59,8 @@ export default function AnimatedRoutes({ location }) {
         <Route path="/my-orders" element={<PageWrapper><MyOrders /></PageWrapper>} />
         <Route path="/select-payment" element={<PageWrapper><SelectPayment /></PageWrapper>} />
         <Route path="/success" element={<PageWrapper><Success /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
 
         {/* Admin Routes */}
         <Route

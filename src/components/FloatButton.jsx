@@ -6,7 +6,7 @@ export default function FloatingButtons() {
         flex gap-3 items-center
         p-2 rounded-full shadow-xl
 
-        top-96 left-1/2 -translate-x-1/2 my-10 -mx-8
+        top-96 left-1/2 -translate-x-1/2 my-10 mx-auto
         md:top-96 md:left-1/3 md:bottom-auto my-16
         md:-translate-y-1/2 md:translate-x-0
       "
