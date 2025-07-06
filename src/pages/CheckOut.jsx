@@ -1,13 +1,14 @@
+// ✅ Combined Checkout + Payment Page for Mechanic Hero
+import { useState, useEffect } from "react";
+import { CreditCard, Home, Banknote } from "lucide-react";
+import { FaMoneyBillWave } from "react-icons/fa";
 import { useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { FaMoneyBillWave } from "react-icons/fa";
-import { CreditCard, Home, Banknote } from "lucide-react";
-import { db, serverTimestamp } from "../firebase";
+import { db, serverTimestamp, auth } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
+import toast from "react-hot-toast";
 import { sendOrderEmail } from "../utility/SendOrderEmail";
-import { getAuth } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -15,20 +16,26 @@ export default function Checkout() {
 
   const [selectedMethod, setSelectedMethod] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
-  // ✅ Calculate totals safely
-  const subtotal = cart.reduce((sum, item) => {
-    const price = Number(item.price) || 0;
-    const qty = Number(item.quantity) || 1;
-    return sum + price * qty;
-  }, 0);
-
-  const shippingFee = 2000; // flat fee
+  const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (item.quantity || 1), 0);
+  const shippingFee = 2000;
   const total = subtotal + shippingFee;
 
-  const customerName = "ICS Ice Cold Shadow";
-  const email = "customer@example.com";
   const orderId = `ORD-${Date.now()}`;
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.flutterwave.com/v3.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const paymentOptions = [
     { id: "opay", label: "Opay", icon: <FaMoneyBillWave size={22} className="text-green-600" /> },
@@ -37,136 +44,116 @@ export default function Checkout() {
     { id: "bank", label: "Bank Transfer", icon: <Banknote size={22} /> },
   ];
 
- 
-const handleOrderSubmit = async () => {
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  if (!user) {
-    toast.error("⚠️ Please log in to complete your purchase");
-    navigate("/login");
-    return;
-  }
-
-  if (!selectedMethod) {
-    toast.error("Please select a payment method");
-    return;
-  }
-
-  if (selectedMethod === "card") {
-    const FlutterwaveCheckout = window.FlutterwaveCheckout;
-    if (!FlutterwaveCheckout) {
-      toast.error("Flutterwave not loaded yet");
+  const handleOrderSubmit = async () => {
+    if (!user) {
+      toast.error("⚠️ Please log in to complete your purchase");
+      navigate("/login");
       return;
     }
 
-    FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X",
-      tx_ref: orderId,
-      amount: total,
-      currency: "NGN",
-      payment_options: "card",
-      customer: {
+    if (!selectedMethod) return toast.error("Please select a payment method");
+    if (selectedMethod === "delivery" && !deliveryAddress.trim()) return toast.error("Please enter your delivery address");
+
+    const customerName = user.displayName || "Customer";
+    const email = user.email || "no-email@unknown.com";
+
+    if (selectedMethod === "card") {
+      const FlutterwaveCheckout = window.FlutterwaveCheckout;
+      if (!FlutterwaveCheckout) return toast.error("Flutterwave not loaded");
+
+      FlutterwaveCheckout({
+        public_key: "FLWPUBK_TEST-1f3b761b0379d7189224306b2227565b-X",
+        tx_ref: orderId,
+        amount: total,
+        currency: "NGN",
+        payment_options: "card",
+        customer: { email, name: customerName },
+        customizations: {
+          title: "ICS AutoFix",
+          description: "Payment for auto parts/service",
+          logo: "https://your-logo.com/logo.png",
+        },
+        callback: async (response) => {
+          if (response.status === "successful") {
+            const orderData = {
+              orderId,
+              customerName,
+              email,
+              cart,
+              method: selectedMethod,
+              subtotal,
+              shippingFee,
+              amount: total,
+              transactionId: response.transaction_id,
+              status: "paid",
+              deliveryAddress,
+              createdAt: serverTimestamp(),
+            };
+            await addDoc(collection(db, "orders"), orderData);
+            await sendOrderEmail(orderData);
+            toast.success("✅ Payment successful!");
+            clearCart();
+            navigate("/success", { state: { order: orderData } });
+          } else {
+            toast.error("❌ Payment failed");
+          }
+        },
+        onclose: () => toast("Payment closed"),
+      });
+
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const customerName = user.displayName || "Customer";
+      const email = user.email || "no-email@unknown.com";
+      const orderData = {
+        orderId,
+        customerName,
         email,
-        name: customerName,
-      },
-      customizations: {
-        title: "ICS AutoFix",
-        description: "Payment for auto parts/service",
-        logo: "https://your-logo.com/logo.png",
-      },
-      callback: async function (response) {
-        if (response.status === "successful") {
-          const orderData = {
-            orderId,
-            customerName,
-            email,
-            cart,
-            method: selectedMethod,
-            subtotal,
-            shippingFee,
-            amount: total,
-            transactionId: response.transaction_id,
-            status: "paid",
-            createdAt: serverTimestamp(),
-          };
-
-          await addDoc(collection(db, "orders"), orderData);
-          await sendOrderEmail(orderData);
-
-          toast.success("✅ Payment successful!");
-          clearCart();
-          navigate("/success", { state: { order: orderData } });
-        } else {
-          toast.error("❌ Payment failed");
-        }
-      },
-      onclose: () => {
-        toast("Payment closed");
-      },
-    });
-
-    return; // 🛑 Stop here, card handled above
-  }
-
-  // 👇 Other methods (opay, delivery, bank)
-  setLoading(true);
-  try {
-    const orderData = {
-      orderId,
-      customerName,
-      email,
-      cart,
-      method: selectedMethod,
-      subtotal,
-      shippingFee,
-      amount: total,
-      status: "pending",
-      createdAt: serverTimestamp(),
-    };
-
-    await addDoc(collection(db, "orders"), orderData);
-    await sendOrderEmail(orderData);
-
-    toast.success(`✅ Order submitted with ${selectedMethod}`);
-    clearCart();
-    navigate("/success", { state: { order: orderData } });
-  } catch (error) {
-    console.error(error);
-    toast.error("Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
-
+        cart,
+        method: selectedMethod,
+        subtotal,
+        shippingFee,
+        amount: total,
+        status: "pending",
+        deliveryAddress,
+        createdAt: serverTimestamp(),
+      };
+      await addDoc(collection(db, "orders"), orderData);
+      await sendOrderEmail(orderData);
+      toast.success(`✅ Order submitted with ${selectedMethod}`);
+      clearCart();
+      navigate("/success", { state: { order: orderData } });
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-8">
       <h2 className="text-2xl font-bold text-red-600 mb-6">Checkout</h2>
 
-      {/* Cart Items */}
       <ul className="space-y-4">
         {cart.map((item) => (
           <li key={item.id} className="flex justify-between items-center border-b pb-2">
             <span>{item.name}</span>
             <span className="text-gray-700">x{item.quantity}</span>
-            <span className="font-semibold">
-              ₦{Number(item.price * item.quantity).toLocaleString()}
-            </span>
+            <span className="font-semibold">₦{Number(item.price * item.quantity).toLocaleString()}</span>
           </li>
         ))}
       </ul>
 
-      {/* Totals */}
       <div className="mt-6 text-sm text-right space-y-1">
         <p>Subtotal: ₦{subtotal.toLocaleString()}</p>
         <p>Shipping Fee: ₦{shippingFee.toLocaleString()}</p>
-        <p className="font-bold text-green-700 text-lg">
-          Total: ₦{isNaN(total) ? "0" : total.toLocaleString()}
-        </p>
+        <p className="font-bold text-green-700 text-lg">Total: ₦{isNaN(total) ? "0" : total.toLocaleString()}</p>
       </div>
 
-      {/* Payment Selection */}
       <h3 className="text-lg font-semibold mt-8 mb-4">Choose Payment Method</h3>
       <div className="space-y-3">
         {paymentOptions.map((option) => (
@@ -174,8 +161,7 @@ const handleOrderSubmit = async () => {
             key={option.id}
             onClick={() => setSelectedMethod(option.id)}
             className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all
-              ${selectedMethod === option.id ? "border-blue-500 bg-blue-50" : "border-gray-300"}
-            `}
+              ${selectedMethod === option.id ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
           >
             {option.icon}
             <span className="font-medium">{option.label}</span>
@@ -183,49 +169,42 @@ const handleOrderSubmit = async () => {
         ))}
       </div>
 
-      {/* Payment Instructions */}
       {selectedMethod === "opay" && (
-        <div className="mt-4 bg-green-50 border border-green-200 p-4 rounded-xl space-y-2">
-          <p className="font-semibold text-green-800">Pay with Opay</p>
-          <div className="text-sm text-gray-700">
-            <p>Account Name: <strong>ICS AutoFix Ventures</strong></p>
-            <p>Account Number: <strong>08012345678</strong></p>
-          </div>
-          <div className="mt-2">
-            <p className="text-xs text-gray-500">Scan QR code below:</p>
-            <img
-              src="/qrcode.png"
-              alt="Opay QR Code"
-              className="w-36 h-36 mt-2 rounded-xl border-2 border-green-200 shadow"
-            />
-          </div>
+        <div className="mt-4 bg-green-50 border border-green-200 p-4 rounded-xl">
+          <p className="font-semibold text-green-800">Opay Details:</p>
+          <p>ICS AutoFix Ventures – 08012345678</p>
+          <img src="/qrcode.png" alt="QR" className="w-36 h-36 mt-2 rounded-xl border shadow" />
         </div>
       )}
 
       {selectedMethod === "bank" && (
         <div className="mt-4 bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
-          <p className="font-medium text-yellow-700">Bank Transfer Details:</p>
-          <p className="text-sm">Bank: <strong>UBA</strong></p>
-          <p className="text-sm">Acc No: <strong>1234567890</strong></p>
-          <p className="text-sm">Name: <strong>ICS AutoFix</strong></p>
+          <p className="font-medium text-yellow-700">Bank: UBA</p>
+          <p>Acc No: 1234567890</p>
+          <p>Name: ICS AutoFix</p>
         </div>
       )}
 
       {selectedMethod === "delivery" && (
         <div className="mt-4 bg-gray-100 border border-gray-300 p-4 rounded-xl">
-          <p className="text-sm text-gray-600">You’ll pay with cash or POS upon delivery.</p>
+          <p className="text-sm text-gray-600">Pay with cash or POS on delivery.</p>
+          <textarea
+            placeholder="Enter delivery address"
+            rows={3}
+            className="w-full p-2 mt-2 border rounded focus:outline-none"
+            value={deliveryAddress}
+            onChange={(e) => setDeliveryAddress(e.target.value)}
+          />
         </div>
       )}
 
-      {/* Submit Button */}
       <button
         onClick={handleOrderSubmit}
-        disabled={!selectedMethod || loading}
-        className={`mt-6 w-full py-3 rounded font-semibold text-white transition 
-          ${selectedMethod ? "bg-red-600 hover:bg-red-700" : "bg-gray-300 cursor-not-allowed"}
-        `}
+        disabled={!selectedMethod || (selectedMethod === "delivery" && !deliveryAddress.trim()) || loading}
+        className={`mt-6 w-full py-3 rounded font-bold text-white transition
+          ${selectedMethod && (selectedMethod !== "delivery" || deliveryAddress.trim()) ? "bg-red-600 hover:bg-red-700" : "bg-gray-300 cursor-not-allowed"}`}
       >
-        {loading ? "Processing..." : "Confirm & Submit Order"}
+        {loading ? "Processing..." : selectedMethod === "card" ? "Pay with Flutterwave" : "Confirm & Submit Order"}
       </button>
     </div>
   );

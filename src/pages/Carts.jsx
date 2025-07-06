@@ -9,6 +9,7 @@ export default function Carts() {
   const { cart, updateCartItem, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [deliveryLocation, setDeliveryLocation] = useState("Lagos");
+  const [exactAddress, setExactAddress] = useState("");
   const [animKey, setAnimKey] = useState(0); // used to trigger animation
 
   // ✅ Quantity controls
@@ -119,7 +120,7 @@ export default function Carts() {
               </div>
             ))}
 
-            {/* Delivery location selector */}
+            {/* Delivery location and exact address */}
             <div className="mt-6">
               <label className="block mb-1 font-medium">Delivery Location:</label>
               <select
@@ -131,6 +132,15 @@ export default function Carts() {
                 <option value="Abuja">Abuja</option>
                 <option value="Other">Other</option>
               </select>
+
+              <label className="block mt-4 mb-1 font-medium">Exact Delivery Address:</label>
+              <textarea
+                value={exactAddress}
+                onChange={(e) => setExactAddress(e.target.value)}
+                rows={3}
+                className="w-full p-2 border rounded resize-none"
+                placeholder="Enter house number, street, landmarks, etc."
+              />
             </div>
 
             {/* Subtotal Breakdown */}
@@ -147,7 +157,15 @@ export default function Carts() {
             </div>
 
             <button
-              onClick={() => navigate("/checkout")}
+              onClick={() => {
+                if (!exactAddress.trim()) {
+                  toast.error("Please enter your exact delivery address");
+                  return;
+                }
+                navigate("/checkout", {
+                  state: { deliveryLocation, exactAddress }
+                });
+              }}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded w-full text-lg font-semibold mt-4"
             >
               🛒 Checkout ({itemCount} items)

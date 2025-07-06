@@ -4,12 +4,14 @@ import { db, storage } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast from "react-hot-toast";
+
 export default function RepairForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    address: "", // ✅ added address
     carModel: "",
     issueType: "",
     issueDesc: "",
@@ -35,6 +37,7 @@ export default function RepairForm() {
     if (!formData.phone) newErrors.phone = "Phone number is required";
     else if (!phoneRegex.test(formData.phone))
       newErrors.phone = "Enter a valid Nigerian phone number (e.g., 08123456789)";
+    if (!formData.address) newErrors.address = "Address is required"; // ✅ validate address
     if (!formData.carModel) newErrors.carModel = "Car model is required";
     if (!formData.issueType) newErrors.issueType = "Select an issue type";
 
@@ -49,39 +52,38 @@ export default function RepairForm() {
     setImagePreview(URL.createObjectURL(file));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    let imageUrl = "";
-    if (image) {
-      const imageRef = ref(storage, `repair_images/${Date.now()}-${image.name}`);
-      await uploadBytes(imageRef, image);
-      imageUrl = await getDownloadURL(imageRef);
+    try {
+      setLoading(true);
+      let imageUrl = "";
+      if (image) {
+        const imageRef = ref(storage, `repair_images/${Date.now()}-${image.name}`);
+        await uploadBytes(imageRef, image);
+        imageUrl = await getDownloadURL(imageRef);
+      }
+
+      await addDoc(collection(db, "bookings"), {
+        ...formData,
+        imageUrl,
+        createdAt: serverTimestamp(),
+      });
+
+      toast.success("Booking submitted! 🎉");
+      navigate("/booking-success");
+    } catch (err) {
+      console.error("Error submitting booking:", err);
+      toast.error("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
-
-    await addDoc(collection(db, "bookings"), {
-      ...formData,
-      imageUrl,
-      createdAt: serverTimestamp(),
-    });
-
-    toast.success("Booking submitted!"); // ✅ Show success notification
-
-    navigate("/booking-success");
-  } catch (err) {
-    console.error("Error submitting booking:", err);
-    toast.error("Something went wrong. Try again."); // ❌ Show error notification
-  }
-};
-
+  };
 
   return (
     <section className="py-16 px-4 bg-white text-black max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">
-        Book a Repair
-      </h2>
+      <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">Book a Repair</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -106,15 +108,23 @@ export default function RepairForm() {
 
         <input
           type="text"
+          name="address"
+          placeholder="Home Address"
+          className="w-full border px-4 py-2 rounded"
+          value={formData.address}
+          onChange={handleChange}
+        />
+        {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+
+        <input
+          type="text"
           name="carModel"
           placeholder="Car Model / Year"
           className="w-full border px-4 py-2 rounded"
           value={formData.carModel}
           onChange={handleChange}
         />
-        {errors.carModel && (
-          <p className="text-red-500 text-sm">{errors.carModel}</p>
-        )}
+        {errors.carModel && <p className="text-red-500 text-sm">{errors.carModel}</p>}
 
         <select
           name="issueType"
@@ -128,9 +138,7 @@ export default function RepairForm() {
           <option>Transmission</option>
           <option>Electrical</option>
         </select>
-        {errors.issueType && (
-          <p className="text-red-500 text-sm">{errors.issueType}</p>
-        )}
+        {errors.issueType && <p className="text-red-500 text-sm">{errors.issueType}</p>}
 
         <textarea
           name="issueDesc"

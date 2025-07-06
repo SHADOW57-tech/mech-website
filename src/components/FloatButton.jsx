@@ -4,7 +4,7 @@ export default function FloatingButtons() {
       className="
         fixed z-50
         flex gap-3 items-center
-        p-2 rounded-full shadow-xl m-auto
+        rounded-full shadow-xl m-auto
 
         top-96 left-1/2 -translate-x-1/2 my-10 
         md:top-96 md:left-1/3 md:bottom-auto my-16

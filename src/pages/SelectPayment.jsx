@@ -14,6 +14,7 @@ export default function SelectPayment() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState("");
   const [user, setUser] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -41,15 +42,34 @@ export default function SelectPayment() {
     document.body.appendChild(script);
   }, []);
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (!selected) {
       toast.error("Please select a payment method");
+      return;
+    }
+
+    if (selected === "delivery" && !deliveryAddress.trim()) {
+      toast.error("Please enter your delivery address");
       return;
     }
 
     if (selected === "card") return payWithFlutterwave();
 
     toast.success("✅ Order placed!");
+
+    // Save order to Firestore for non-card payments
+    await addDoc(collection(db, "payments"), {
+      orderId,
+      email,
+      customerName,
+      cart,
+      amount: totalAmount,
+      transactionId: "PENDING",
+      status: "pending",
+      method: selected,
+      deliveryAddress: selected === "delivery" ? deliveryAddress : "",
+      createdAt: serverTimestamp(),
+    });
 
     navigate("/checkout-success", {
       state: {
@@ -62,6 +82,7 @@ export default function SelectPayment() {
           transactionId: "PENDING",
           status: "pending",
           method: selected,
+          deliveryAddress: selected === "delivery" ? deliveryAddress : "",
         },
       },
     });
@@ -73,6 +94,7 @@ export default function SelectPayment() {
       amount: totalAmount,
       cart,
       method: selected,
+      deliveryAddress: selected === "delivery" ? deliveryAddress : "",
     });
 
     clearCart();
@@ -113,6 +135,7 @@ export default function SelectPayment() {
             transactionId: response.transaction_id,
             method: "flutterwave",
             status: "successful",
+            deliveryAddress: deliveryAddress,
             createdAt: serverTimestamp(),
           });
 
@@ -123,6 +146,7 @@ export default function SelectPayment() {
             amount: totalAmount,
             cart,
             method: "flutterwave",
+            deliveryAddress: deliveryAddress,
           });
 
           clearCart();
@@ -136,6 +160,7 @@ export default function SelectPayment() {
                 cart,
                 amount: totalAmount,
                 transactionId: response.transaction_id,
+                deliveryAddress: deliveryAddress,
               },
             },
           });
@@ -178,15 +203,29 @@ export default function SelectPayment() {
 
       {selected === "delivery" && (
         <div className="mt-4 bg-gray-100 p-4 rounded-xl text-sm text-gray-600">
-          You’ll pay with cash or POS when we deliver your parts or fix your car.
+          <div className="mb-2">You’ll pay with cash or POS when we deliver your parts or fix your car.</div>
+          <label className="block mb-1 font-medium text-gray-700">Delivery Address</label>
+          <textarea
+            className="w-full p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+            rows={3}
+            placeholder="Enter your delivery address"
+            value={deliveryAddress}
+            onChange={e => setDeliveryAddress(e.target.value)}
+            required
+          />
         </div>
       )}
 
       <button
         onClick={handleProceed}
-        disabled={!selected}
-        className={`mt-6 w-full py-3 rounded font-bold text-white transition 
-          ${selected ? "bg-red-600 hover:bg-red-700" : "bg-gray-300 cursor-not-allowed"}
+        disabled={
+          !selected ||
+          (selected === "delivery" && !deliveryAddress.trim())
+        }
+         className={`mt-6 w-full py-3 rounded font-bold text-white transition 
+          ${selected && (selected !== "delivery" || deliveryAddress.trim())
+            ? "bg-red-600 hover:bg-red-700"
+            : "bg-gray-300 cursor-not-allowed"}
         `}
       >
         {selected === "card" ? "Pay with Flutterwave" : "Confirm & Submit Order"}
