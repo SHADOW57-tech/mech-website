@@ -19,7 +19,10 @@ export default function Checkout() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
-  const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (item.quantity || 1), 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + (Number(item.price) || 0) * (item.quantity || 1),
+    0
+  );
   const shippingFee = 2000;
   const total = subtotal + shippingFee;
   const orderId = `ORD-${Date.now()}`;
@@ -30,6 +33,11 @@ export default function Checkout() {
   }, []);
 
   useEffect(() => {
+    const existing = document.querySelector('script[src="https://checkout.flutterwave.com/v3.js"]');
+    if (existing) {
+      setScriptLoaded(true);
+      return;
+    }
     const script = document.createElement("script");
     script.src = "https://checkout.flutterwave.com/v3.js";
     script.async = true;
@@ -46,12 +54,13 @@ export default function Checkout() {
     }
 
     if (!selectedMethod) return toast.error("Please select a payment method");
-    if (selectedMethod === "delivery" && !deliveryAddress.trim()) return toast.error("Please enter your delivery address");
+    if (selectedMethod === "delivery" && !deliveryAddress.trim()) {
+      return toast.error("Please enter your delivery address");
+    }
 
     const customerName = user.displayName || "Customer";
     const email = user.email || "no-email@unknown.com";
 
-    // ✅ Flutterwave payment
     if (selectedMethod === "card") {
       if (!scriptLoaded || !window.FlutterwaveCheckout) {
         toast.error("Payment gateway not ready. Please wait a moment.");
@@ -82,7 +91,7 @@ export default function Checkout() {
               shippingFee,
               amount: total,
               transactionId: response.transaction_id,
-              status: "successful", // ✅ updated here
+              status: "successful",
               deliveryAddress,
               createdAt: serverTimestamp(),
             };
@@ -105,13 +114,13 @@ export default function Checkout() {
             toast.error("❌ Payment failed");
           }
         },
-        onclose: () => toast("Payment closed"),
+        onclose: () => toast("❌ Payment was cancelled"),
       });
 
       return;
     }
 
-    // ✅ Delivery, Opay, Bank
+    // For delivery, bank, Opay
     setLoading(true);
     try {
       const orderData = {
