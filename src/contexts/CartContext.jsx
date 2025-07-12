@@ -30,34 +30,45 @@ export const CartProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // ✅ Step 2: Load cart from Firestore
+  // ✅ Step 2: Load cart from localStorage or Firestore
   useEffect(() => {
     if (!cartId) return;
     const loadCart = async () => {
+      const localCart = localStorage.getItem("ics_cart");
+      if (localCart) {
+        setCart(JSON.parse(localCart));
+        console.log("🧠 Cart loaded from localStorage:", JSON.parse(localCart));
+      }
+
       const ref = doc(db, "carts", cartId);
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        setCart(snap.data().items || []);
-        console.log("🧠 Cart loaded from Firestore:", snap.data().items);
+        const firestoreCart = snap.data().items || [];
+        setCart(firestoreCart);
+        console.log("🧠 Cart loaded from Firestore:", firestoreCart);
       } else {
-        console.log("🆕 No existing cart found, starting fresh.");
+        console.log("🆕 No existing Firestore cart found.");
       }
     };
     loadCart();
   }, [cartId]);
 
-  // ✅ Step 3: Save cart to Firestore when it changes (skip first load)
+  // ✅ Step 3: Save cart to localStorage and Firestore (skip first load)
   useEffect(() => {
     if (!cartId || isFirstLoad.current) {
       isFirstLoad.current = false;
       return;
     }
-    const saveCart = async () => {
+
+    localStorage.setItem("ics_cart", JSON.stringify(cart));
+    console.log("💾 Cart saved to localStorage:", cart);
+
+    const saveCartToFirestore = async () => {
       const ref = doc(db, "carts", cartId);
       await setDoc(ref, { items: cart });
       console.log("💾 Cart saved to Firestore:", cart);
     };
-    saveCart();
+    saveCartToFirestore();
   }, [cart, cartId]);
 
   // ✅ Step 4: Add item to cart
@@ -98,9 +109,9 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCart([]);
+    localStorage.removeItem("ics_cart");
   };
 
-  // ✅ Done — provide context
   return (
     <CartContext.Provider
       value={{ cart, addToCart, updateCartItem, removeFromCart, clearCart }}

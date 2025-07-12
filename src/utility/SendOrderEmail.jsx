@@ -1,15 +1,10 @@
+// 📁 utility/SendOrderEmail.js
 import emailjs from "emailjs-com";
 
 /**
  * Sends an order confirmation email via EmailJS.
  *
  * @param {Object} param0 - Order details
- * @param {string} param0.customerName - Customer's full name
- * @param {string} param0.email - Customer's email address
- * @param {string} param0.orderId - Unique order ID
- * @param {number} param0.amount - Total amount paid
- * @param {Array} param0.cart - Array of cart items
- * @param {string} param0.method - Payment method used
  */
 export const sendOrderEmail = async ({
   customerName,
@@ -18,30 +13,35 @@ export const sendOrderEmail = async ({
   amount,
   cart,
   method,
+  deliveryAddress = "N/A",
 }) => {
   try {
+    const formattedItems = cart
+      .map(
+        (item, index) =>
+          `${index + 1}. ${item.name} — Qty: ${item.quantity || 1} — ₦${(
+            item.price * (item.quantity || 1)
+          ).toLocaleString()}`
+      )
+      .join("\n");
+
     await emailjs.send(
-      "service_2cmjqck",      // Your EmailJS service ID
-      "template_x2fo91s",     // Your EmailJS template ID
+      "service_vicxpzd", // ✅ Your EmailJS Service ID
+      "template_x2fo91s", // ✅ Your EmailJS Template ID
       {
         customer_name: customerName,
-        email: email,
+        email,
         order_id: orderId,
-        cart_items: cart
-          .map(
-            (item) =>
-              `${item.name} x${item.quantity}\n₦${(
-                item.price * item.quantity
-              ).toLocaleString()}`
-          )
-          .join("\n\n"),
+        cart_items: formattedItems,
         amount: `₦${amount.toLocaleString()}`,
         payment_method: method,
+        delivery_address: deliveryAddress,
       },
-      "hJSZS0F5Mq_pmsQTg"     // Your EmailJS public key
+      "hJSZS0F5Mq_pmsQTg" // ✅ Your EmailJS Public Key
     );
-    console.log("📧 Email sent successfully!");
+
+    console.log("📧 Order email sent successfully!");
   } catch (err) {
-    console.error("❌ Email sending failed:", err);
+    console.error("❌ Failed to send order email:", err);
   }
 };
