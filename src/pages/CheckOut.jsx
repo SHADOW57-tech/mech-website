@@ -1,3 +1,4 @@
+// 🔁 Everything before this remains unchanged...
 import { useState, useEffect } from "react";
 import { CreditCard, Home, Banknote } from "lucide-react";
 import { FaMoneyBillWave } from "react-icons/fa";
@@ -33,7 +34,9 @@ export default function Checkout() {
   }, []);
 
   useEffect(() => {
-    const existing = document.querySelector('script[src="https://checkout.flutterwave.com/v3.js"]');
+    const existing = document.querySelector(
+      'script[src="https://checkout.flutterwave.com/v3.js"]'
+    );
     if (existing) {
       setScriptLoaded(true);
       return;
@@ -45,6 +48,35 @@ export default function Checkout() {
     script.onerror = () => toast.error("❌ Failed to load payment script");
     document.body.appendChild(script);
   }, []);
+
+  const sendAdminAlerts = async (orderData) => {
+  try {
+    // ✅ Trigger Firebase Cloud Function
+    const res = await fetch("https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/sendAdminAlerts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!res.ok) throw new Error("Admin alert failed");
+    console.log("✅ Admin alert sent via Cloud Function");
+
+    // ✅ Send Admin Emails from frontend (optional)
+    const adminEmails = ["admin1@example.com", "admin2@example.com"];
+    for (const adminEmail of adminEmails) {
+      try {
+        await sendOrderEmail({ ...orderData, email: adminEmail });
+        console.log(`✅ Admin email sent to ${adminEmail}`);
+      } catch (emailErr) {
+        console.error(`❌ Email to ${adminEmail} failed:`, emailErr);
+      }
+    }
+
+  } catch (err) {
+    console.error("❌ Failed to send admin alert:", err);
+  }
+};
+
 
   const handleOrderSubmit = async () => {
     if (!user) {
@@ -61,6 +93,7 @@ export default function Checkout() {
     const customerName = user.displayName || "Customer";
     const email = user.email || "no-email@unknown.com";
 
+    // ✅ Flutterwave card payment
     if (selectedMethod === "card") {
       if (!scriptLoaded || !window.FlutterwaveCheckout) {
         toast.error("Payment gateway not ready. Please wait a moment.");
@@ -107,6 +140,8 @@ export default function Checkout() {
             });
 
             await sendOrderEmail(orderData);
+            await sendAdminAlerts(orderData); // ✅ send to admins
+
             toast.success("✅ Payment successful!");
             clearCart();
             navigate("/success", { state: { order: orderData } });
@@ -120,7 +155,7 @@ export default function Checkout() {
       return;
     }
 
-    // For delivery, bank, Opay
+    // ✅ Opay, Bank, Delivery
     setLoading(true);
     try {
       const orderData = {
@@ -148,6 +183,8 @@ export default function Checkout() {
       });
 
       await sendOrderEmail(orderData);
+      await sendAdminAlerts(orderData); // ✅ send to admins
+
       toast.success(`✅ Order submitted with ${selectedMethod}`);
       clearCart();
       navigate("/success", { state: { order: orderData } });
@@ -159,6 +196,7 @@ export default function Checkout() {
     }
   };
 
+  // ✅ Payment options UI stays the same...
   const paymentOptions = [
     { id: "opay", label: "Opay", icon: <FaMoneyBillWave size={22} className="text-green-600" /> },
     { id: "card", label: "Card Payment", icon: <CreditCard size={22} /> },

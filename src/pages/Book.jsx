@@ -4,6 +4,7 @@ import { db, storage } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast from "react-hot-toast";
+import { sendOrderEmail } from "../utility/SendOrderEmail";
 
 export default function RepairForm() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function RepairForm() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
-    address: "", // ✅ added address
+    address: "",
     carModel: "",
     issueType: "",
     issueDesc: "",
@@ -37,7 +38,7 @@ export default function RepairForm() {
     if (!formData.phone) newErrors.phone = "Phone number is required";
     else if (!phoneRegex.test(formData.phone))
       newErrors.phone = "Enter a valid Nigerian phone number (e.g., 08123456789)";
-    if (!formData.address) newErrors.address = "Address is required"; // ✅ validate address
+    if (!formData.address) newErrors.address = "Address is required";
     if (!formData.carModel) newErrors.carModel = "Car model is required";
     if (!formData.issueType) newErrors.issueType = "Select an issue type";
 
@@ -50,6 +51,24 @@ export default function RepairForm() {
     if (!file) return;
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  // ✅ Send admin alerts via Firebase Cloud Function
+  const sendAdminAlerts = async (bookingData) => {
+    try {
+      const res = await fetch("https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/sendAdminAlerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Admin alert failed");
+
+      console.log("✅ Admin alerts sent");
+    } catch (err) {
+      console.error("❌ Failed to send admin alert:", err);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -65,16 +84,21 @@ export default function RepairForm() {
         imageUrl = await getDownloadURL(imageRef);
       }
 
-      await addDoc(collection(db, "bookings"), {
+      const bookingData = {
         ...formData,
         imageUrl,
         createdAt: serverTimestamp(),
-      });
+      };
+
+      await addDoc(collection(db, "bookings"), bookingData);
+
+      await sendAdminAlerts(bookingData); // ✅ Send alerts (Cloud Function)
+      await sendOrderEmail({ ...bookingData, email: "admin@example.com" }); // optional fallback
 
       toast.success("Booking submitted! 🎉");
       navigate("/booking-success");
     } catch (err) {
-      console.error("Error submitting booking:", err);
+      console.error("❌ Error submitting booking:", err);
       toast.error("Something went wrong. Try again.");
     } finally {
       setLoading(false);
@@ -149,7 +173,6 @@ export default function RepairForm() {
           onChange={handleChange}
         />
 
-        {/* Image Upload Section */}
         <div className="space-y-2">
           <label className="block font-medium">Upload Car Issue Photo (optional):</label>
           <input
