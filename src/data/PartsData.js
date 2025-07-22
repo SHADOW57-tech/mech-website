@@ -1,9 +1,11 @@
-import Sterring1 from "../images/Sterring 1.1m 1.jpg";
-import Sterring2 from "../images/Sterring 1m1.jpg";
+import Sterring1 from "../images/Sterring-1.1m-1.jpg";
+import Sterring2 from "../images/Sterring-1m1.jpg";
 import Sterring3 from "../images/Sterring1.1m2.jpg";
 import Sterring4 from "../images/Sterring1.1m2.jpg";
-import AmbulanceLight from "../images/Ambiance light1.jpg";
-import frontGLEupgrade from "../images/front GLE upgrade.jpg"
+import AmbulanceLight from "../images/Ambiance-light1.jpg";
+import frontGLEupgrade from "../images/front-GLE-upgrade.jpg";
+import Headlamp1 from "../images/E350-2014-headlamp-750k.jpg";
+import Headlamp2 from "../images/GLA-2019-head-light-800k.jpg";
 
 
  const allParts = [
@@ -15,6 +17,8 @@ import frontGLEupgrade from "../images/front GLE upgrade.jpg"
     {id: 54, name: "Ambiance light", desc:"for GLC/C300 2015/E350 2017/CLA", price: 650000, image:AmbulanceLight, type: "interior"},
     {id:55, name:"front GLE upgrade", price:1000000, image:frontGLEupgrade, type: "exterior"},
     { id: 56, name: "Oil Filter", price: 5500, image: "/images/oil-filter.jpg", type: "Engine" },
+    {id: 57, name: "E350 2014 headlamp 750k", price:750000, image:Headlamp1},
+    {id: 58, name: "GLA 2019 head light 800k", price:800000, image:Headlamp2},
     { id: 3, name: "Air Filter", price: 6200, image: "/images/air-filter.jpg", type: "Engine" },
     { id: 4, name: "Battery", price: 45000, image: "/images/battery.jpg", type: "Electrical" },
     { id: 5, name: "Wiper Blades", price: 3000, image: "/images/wiper.jpg", type: "Exterior" },
@@ -65,4 +69,4 @@ import frontGLEupgrade from "../images/front GLE upgrade.jpg"
     { id: 50, name: "Fuel Pressure Regulator", price: 8000, image: "/images/fuel-pressure-regulator.jpg", type: "Fuel System" },
   
   ];
-  export default allParts
+  export default allParts;
