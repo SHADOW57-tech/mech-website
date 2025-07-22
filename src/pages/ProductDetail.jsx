@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-import allParts from "../data/partsData";
+import allParts from "../data/PartsData";
 import toast from "react-hot-toast";
 
 export default function ProductDetail() {
