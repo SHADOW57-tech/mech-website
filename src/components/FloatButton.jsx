@@ -40,7 +40,7 @@ export default function FloatingButtons() {
 
       {/* Chat Us */}
       <a
-        href="https://wa.me/2348121018756"
+        href="https://wa.me/2348060077529"
         target="_blank"
         rel="noopener noreferrer"
         className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-full shadow text-sm flex items-center justify-center"

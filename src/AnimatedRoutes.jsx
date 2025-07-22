@@ -18,6 +18,7 @@ import BookAndOrder from "./pages/BookAndOrder";
 import MyOrders from "./pages/MyOrder";
 import SelectPayment from "./pages/SelectPayment";
 import Success from "./pages/Success";
+import ProductDetail from "./pages/ProductDetail";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
@@ -48,6 +49,7 @@ export default function AnimatedRoutes({ location }) {
           }
         />
         <Route path="/parts" element={<PageWrapper><Parts /></PageWrapper>} />
+        <Route path="/parts/:id" element={<PageWrapper><ProductDetail /></PageWrapper>} />
         <Route path="/book" element={<PageWrapper><Book /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><CheckOut /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Cart /></PageWrapper>} />

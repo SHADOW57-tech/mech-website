@@ -6,37 +6,37 @@ import { useCart } from "../contexts/CartContext";
 import toast from "react-hot-toast";
 
 export default function Carts() {
-  const { cart, updateCartItem, removeFromCart } = useCart();
+  const { cart, updateCartItem, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [deliveryLocation, setDeliveryLocation] = useState("Lagos");
   const [exactAddress, setExactAddress] = useState("");
-  const [animKey, setAnimKey] = useState(0); // used to trigger animation
+  const [animKey, setAnimKey] = useState(0);
 
-  // ✅ Quantity controls
-  const increaseQty = (id) => {
-    const item = cart.find((i) => i.id === id);
-    updateCartItem(id, { ...item, quantity: (item.quantity || 1) + 1 });
+ const increaseQty = (id) => {
+  const item = cart.find((i) => i.id === id);
+  const newQty = (item.quantity || 1) + 1;
+  updateCartItem(id, newQty); // ✅ just the number
+  setAnimKey((prev) => prev + 1);
+  toast.success("Increased quantity!");
+};
+
+const decreaseQty = (id) => {
+  const item = cart.find((i) => i.id === id);
+  if ((item.quantity || 1) > 1) {
+    const newQty = item.quantity - 1;
+    updateCartItem(id, newQty); // ✅ just the number
     setAnimKey((prev) => prev + 1);
-    toast.success("Increased quantity!");
-  };
+    toast.success("Decreased quantity!");
+  }
+};
 
-  const decreaseQty = (id) => {
-    const item = cart.find((i) => i.id === id);
-    if (item.quantity > 1) {
-      updateCartItem(id, { ...item, quantity: item.quantity - 1 });
-      setAnimKey((prev) => prev + 1);
-      toast.success("Decreased quantity!");
-    }
-  };
 
-  // ✅ Remove item
   const handleRemove = (id) => {
     removeFromCart(id);
     setAnimKey((prev) => prev + 1);
     toast.success("Item removed from cart!");
   };
 
-  // ✅ Calculations
   const itemCount = cart.reduce((sum, i) => sum + (i.quantity || i.qty || 1), 0);
   const totalAmount = cart.reduce((sum, item) => {
     const price = Number(item.price) || 0;
@@ -83,31 +83,44 @@ export default function Carts() {
                 key={item.id}
                 className="flex justify-between items-start border-b pb-4"
               >
-                <div>
-                  <p className="font-semibold text-base">{item.name}</p>
-                  <p className="text-sm text-gray-600">
-                    ₦{Number(item.price).toLocaleString()} x {item.quantity || item.qty} ={" "}
-                    <span className="font-medium text-black">
-                      ₦{(item.price * (item.quantity || item.qty)).toLocaleString()}
-                    </span>
-                  </p>
+                <div className="flex gap-4">
+                  {/* ✅ Product Image */}
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-20 h-20 object-cover rounded border"
+                    />
+                  )}
 
-                  <div className="flex items-center gap-2 mt-2">
-                    <button
-                      onClick={() => decreaseQty(item.id)}
-                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                    >
-                      -
-                    </button>
-                    <span className="min-w-[20px] text-center">
-                      {item.quantity || item.qty}
-                    </span>
-                    <button
-                      onClick={() => increaseQty(item.id)}
-                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                    >
-                      +
-                    </button>
+                  <div>
+                    <p className="font-semibold text-base">{item.name}</p>
+                    <p className="text-sm text-gray-600">
+                      ₦{Number(item.price).toLocaleString()} x{" "}
+                      {item.quantity || item.qty} ={" "}
+                      <span className="font-medium text-black">
+                        ₦
+                        {(item.price * (item.quantity || item.qty)).toLocaleString()}
+                      </span>
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => decreaseQty(item.id)}
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        -
+                      </button>
+                      <span className="min-w-[20px] text-center">
+                        {item.quantity || item.qty}
+                      </span>
+                      <button
+                        onClick={() => increaseQty(item.id)}
+                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -119,6 +132,17 @@ export default function Carts() {
                 </button>
               </div>
             ))}
+
+            {/* ✅ Clear Cart Button */}
+            <button
+              onClick={() => {
+                clearCart();
+                toast.success("Cart cleared!");
+              }}
+              className="w-full bg-gray-200 hover:bg-gray-300 text-sm py-2 rounded mt-4"
+            >
+              Clear Cart
+            </button>
 
             {/* Delivery location and exact address */}
             <div className="mt-6">
@@ -143,7 +167,6 @@ export default function Carts() {
               />
             </div>
 
-            {/* Subtotal Breakdown */}
             <div className="mt-6 text-sm text-right space-y-1 border-t pt-4">
               <p>Subtotal: ₦{totalAmount.toLocaleString()}</p>
               <p>Estimated Tax (7.5%): ₦{estimatedTax.toLocaleString()}</p>
@@ -163,7 +186,7 @@ export default function Carts() {
                   return;
                 }
                 navigate("/checkout", {
-                  state: { deliveryLocation, exactAddress }
+                  state: { deliveryLocation, exactAddress },
                 });
               }}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded w-full text-lg font-semibold mt-4"

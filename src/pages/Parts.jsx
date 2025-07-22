@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCart } from "../contexts/CartContext";
 import { gsap } from "gsap";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import allData from "../data/PartsData"; // Ensure this points to your parts data file
+
 
 export default function Parts() {
   const { addToCart, cart } = useCart();
@@ -9,26 +12,9 @@ export default function Parts() {
   const sectionRef = useRef(null);
   const cartRef = useRef(null); // for animation
 
-  const parts = [
-    { id: 1, name: "Brake Pads", price: 12000, image: "/images/brake-pads.jpg", type: "Brakes" },
-    { id: 2, name: "Oil Filter", price: 5500, image: "/images/oil-filter.jpg", type: "Engine" },
-    { id: 3, name: "Air Filter", price: 6200, image: "/images/air-filter.jpg", type: "Engine" },
-    { id: 4, name: "Battery", price: 45000, image: "/images/battery.jpg", type: "Electrical" },
-    { id: 5, name: "Wiper Blades", price: 3000, image: "/images/wiper.jpg", type: "Exterior" },
-    { id: 6, name: "Spark Plug", price: 2800, image: "/images/spark-plug.jpg", type: "Engine" },
-    { id: 7, name: "Fuel Pump", price: 18000, image: "/images/fuel-pump.jpg", type: "Fuel System" },
-    { id: 8, name: "Timing Belt", price: 10000, image: "/images/timing-belt.jpg", type: "Engine" },
-    { id: 9, name: "Radiator", price: 25000, image: "/images/radiator.jpg", type: "Cooling System" },
-    { id: 10, name: "Headlight Bulb", price: 1500, image: "/images/headlight-bulb.jpg", type: "Electrical" },
-    { id: 11, name: "Tail Light Bulb", price: 1200, image: "/images/tail-light-bulb.jpg", type: "Electrical" },
-    { id: 12, name: "Brake Fluid", price: 2500, image: "/images/brake-fluid.jpg", type: "Brakes" },
-    { id: 13, name: "Coolant", price: 3000, image: "/images/coolant.jpg", type: "Cooling System" },
-    { id: 14, name: "Transmission Fluid", price: 4000, image: "/images/transmission-fluid.jpg", type: "Transmission" },
-    { id: 15, name: "Power Steering Fluid", price: 3500, image: "/images/power-steering-fluid.jpg", type: "Steering" },
-    { id: 16, name: "Clutch Kit", price: 20000, image: "/images/clutch-kit.jpg", type: "Transmission" },
-  ];
+  
 
-  const filteredParts = parts.filter((part) =>
+  const filteredParts = allData.filter((part) =>
     part.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -49,8 +35,6 @@ export default function Parts() {
   const handleAddToCart = (part) => {
     addToCart({ ...part, quantity: 1 });
     toast.success("Item added successfully to cart!");
-
-    // Optional: Animate cart info on add
     if (cartRef.current) {
       gsap.fromTo(
         cartRef.current,
@@ -78,14 +62,14 @@ export default function Parts() {
           />
         </div>
 
-        {/* Parts Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredParts.length > 0 ? (
-            filteredParts.map((part) => (
-              <div
-                key={part.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col items-center"
-              >
+        {/* ✅ Parts Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredParts.map((part) => (
+            <div
+              key={`${part.id}-${part.name}`}
+              className="bg-white rounded-xl shadow p-4"
+            >
+              <Link to={`/parts/${part.id}`} className="block w-full">
                 <img
                   src={part.image}
                   alt={part.name}
@@ -95,22 +79,18 @@ export default function Parts() {
                 <p className="text-red-600 font-bold mt-1">
                   ₦{part.price.toLocaleString()}
                 </p>
-                <button
-                  onClick={() => handleAddToCart(part)}
-                  className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500 col-span-full">
-              No matching parts found.
-            </p>
-          )}
+              </Link>
+              <button
+                onClick={() => handleAddToCart(part)}
+                className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
         </div>
 
-         {/* Floating Cart Info */}
+        {/* Floating Cart Info */}
         {cart.length > 0 && (
           <div
             ref={cartRef}
