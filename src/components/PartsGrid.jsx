@@ -57,13 +57,13 @@ export default function PartsGrid() {
         {parts.map((part) => (
           <div
             key={part.id}
-            className="part-item bg-white shadow-md p-4 rounded-lg text-center hover:shadow-lg transition"
+            className="part-item bg-white shadow-md p-4 rounded-lg text-center transform transition duration-300  hover:shadow-xl hover:bg-gray-100"
           >
             {part.image && (
               <img
                 src={part.image}
                 alt={part.name}
-                className="mx-auto mb-2 w-44 h-24 object-contain"
+                className="mx-auto mb-2 w-44 h-24 object-contain transition-transform duration-500 hover:scale-110"
               />
             )}
             <h3 className="text-lg font-semibold">{part.name}</h3>

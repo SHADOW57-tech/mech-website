@@ -45,7 +45,7 @@ export default function Parts() {
   };
 
   return (
-    <section ref={sectionRef} className="py-16 px-4 bg-gray-50 text-black">
+    <section ref={sectionRef} className="py-4 px-4 bg-gray-300 text-black">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-center text-red-600 mb-8">
           Order Car Parts
@@ -63,32 +63,33 @@ export default function Parts() {
         </div>
 
         {/* ✅ Parts Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredParts.map((part) => (
-            <div
-              key={`${part.id}-${part.name}`}
-              className="bg-white rounded-xl shadow p-4"
-            >
-              <Link to={`/parts/${part.id}`} className="block w-full">
-                <img
-                  src={part.image}
-                  alt={part.name}
-                  className="w-full h-40 object-cover rounded"
-                />
-                <h3 className="text-lg font-semibold mt-4">{part.name}</h3>
-                <p className="text-red-600 font-bold mt-1">
-                  ₦{part.price.toLocaleString()}
-                </p>
-              </Link>
-              <button
-                onClick={() => handleAddToCart(part)}
-                className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
-              >
-                Add to Cart
-              </button>
-            </div>
-          ))}
-        </div>
+       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+  {filteredParts.map((part) => (
+    <div
+      key={`${part.id}-${part.name}`}
+      className="bg-white rounded-xl shadow p-4 transition-transform duration-300 transform hover:scale-105"
+    >
+      <Link to={`/parts/${part.id}`} className="block w-full">
+        <img
+          src={part.image}
+          alt={part.name}
+          className="w-full h-40 object-cover rounded transition-transform duration-300 hover:scale-105"
+        />
+        <h3 className="text-lg font-semibold mt-4 text-gray-800">{part.name}</h3>
+        <p className="text-red-600 font-bold mt-1">
+          ₦{part.price.toLocaleString()}
+        </p>
+      </Link>
+      <button
+        onClick={() => handleAddToCart(part)}
+        className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
+      >
+        Add to Cart
+      </button>
+    </div>
+  ))}
+</div>
+
 
         {/* Floating Cart Info */}
         {cart.length > 0 && (
