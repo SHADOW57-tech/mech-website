@@ -38,6 +38,7 @@ export default function Navbar() {
     { name: "Parts", href: "/parts" },
     { name: "Orders", href: "/my-orders" },
     { name: "Contact", href: "/contact" },
+    { name: "Sell", href: "/sell" },
   ];
 
   return (

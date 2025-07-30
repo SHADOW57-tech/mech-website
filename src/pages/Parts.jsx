@@ -3,19 +3,37 @@ import { useCart } from "../contexts/CartContext";
 import { gsap } from "gsap";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import allData from "../data/PartsData"; // Ensure this points to your parts data file
-
+import  {useProducts}  from "../contexts/ProductContext";
+import allData from "../data/PartsData"; // Your original array
 
 export default function Parts() {
   const { addToCart, cart } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
+  const [uploadedParts, setUploadedParts] = useState([]);
   const sectionRef = useRef(null);
-  const cartRef = useRef(null); // for animation
+  const cartRef = useRef(null);
+  const { products } = useProducts(); // These are products from Sell page
+   // Combine with original parts
 
-  
+  // Fetch seller-uploaded items from localStorage
+  useEffect(() => {
+    const savedUploads = JSON.parse(localStorage.getItem("uploadedParts")) || [];
+    setUploadedParts(savedUploads);
+  }, []);
 
-  const filteredParts = allData.filter((part) =>
-    part.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Combine original parts with uploaded ones
+const combinedParts = [
+  ...allData,         // original array from PartsData
+  ...products,        // products from Sell page
+  ...uploadedParts    // seller-uploaded items from localStorage
+];
+// Remove duplicates by id (keep the first occurrence)
+const uniqueParts = Array.from(
+  new Map(combinedParts.map(part => [part.id, part])).values()
+);
+  // Filter based on search
+  const filteredParts = uniqueParts.filter((part) =>
+part.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -56,40 +74,39 @@ export default function Parts() {
           <input
             type="text"
             placeholder="Search parts..."
-            className="w-full max-w-md mx-auto grid-cols-2 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full max-w-md mx-auto border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        {/* ✅ Parts Grid */}
-       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-  {filteredParts.map((part) => (
-    <div
-      key={`${part.id}-${part.name}`}
-      className="bg-white rounded-xl shadow p-4 transition-transform duration-300 transform hover:scale-105"
-    >
-      <Link to={`/parts/${part.id}`} className="block w-full">
-        <img
-          src={part.image}
-          alt={part.name}
-          className="w-full h-40 object-cover rounded transition-transform duration-300 hover:scale-105"
-        />
-        <h3 className="text-lg font-semibold mt-4 text-gray-800">{part.name}</h3>
-        <p className="text-red-600 font-bold mt-1">
-          ₦{part.price.toLocaleString()}
-        </p>
-      </Link>
-      <button
-        onClick={() => handleAddToCart(part)}
-        className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
-      >
-        Add to Cart
-      </button>
-    </div>
-  ))}
-</div>
-
+        {/* Parts Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredParts.map((part) => (
+            <div
+              key={`${part.id}-${part.name}`}
+              className="bg-white rounded-xl shadow p-4 transition-transform duration-300 transform hover:scale-105"
+            >
+              <Link to={`/parts/${part.id}`} className="block w-full">
+                <img
+                  src={part.image}
+                  alt={part.name}
+                  className="w-full h-40 object-cover rounded transition-transform duration-300 hover:scale-105"
+                />
+                <h3 className="text-lg font-semibold mt-4 text-gray-800">{part.name}</h3>
+                <p className="text-red-600 font-bold mt-1">
+                  ₦{Number(part.price).toLocaleString()}
+                </p>
+              </Link>
+              <button
+                onClick={() => handleAddToCart(part)}
+                className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
 
         {/* Floating Cart Info */}
         {cart.length > 0 && (

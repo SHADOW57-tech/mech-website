@@ -19,6 +19,7 @@ import MyOrders from "./pages/MyOrder";
 import SelectPayment from "./pages/SelectPayment";
 import Success from "./pages/Success";
 import ProductDetail from "./pages/ProductDetail";
+import Sell from "./pages/Sell";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
@@ -63,6 +64,7 @@ export default function AnimatedRoutes({ location }) {
         <Route path="/success" element={<PageWrapper><Success /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
+        <Route path="/sell" element={<PageWrapper><Sell /></PageWrapper>} />
 
         {/* Admin Routes */}
         <Route
