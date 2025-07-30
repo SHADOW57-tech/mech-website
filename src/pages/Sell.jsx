@@ -33,7 +33,7 @@ const Sell = () => {
       setProduct((prev) => ({ ...prev, image: reader.result }));
     };
     if (file) reader.readAsDataURL(file);
-  };
+  }; 
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +69,7 @@ const Sell = () => {
           value={product.price}
           onChange={handleChange}
           placeholder="Price"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded text-black"
           required
         />
         <input
