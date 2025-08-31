@@ -4,12 +4,12 @@ import toast from 'react-hot-toast';
 import { db, storage } from '../../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useAuth } from '../../contexts/AuthContext'; // Make sure this provides `user`, not `currentUser`
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function SellerDashboard() {
   const [form, setForm] = useState({ name: '', price: '', category: '', image: null });
   const [uploading, setUploading] = useState(false);
-  const { user } = useAuth(); // 🔁 Updated to match your AuthContext
+  const { user } = useAuth(); 
 
   if (!user) {
     return (

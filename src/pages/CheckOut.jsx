@@ -262,7 +262,7 @@ export default function Checkout() {
           <textarea
             placeholder="Enter delivery address"
             rows={3}
-            className="w-full p-2 mt-2 border rounded focus:outline-none"
+            className="w-full p-2 mt-2 border rounded focus:outline-none bg-slate-700"
             value={deliveryAddress}
             onChange={(e) => setDeliveryAddress(e.target.value)}
           />
