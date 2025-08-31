@@ -6,9 +6,7 @@ export default function FloatingButtons() {
         flex gap-3 items-center
         rounded-full shadow-xl m-auto
 
-        top-96 left-1/2 -translate-x-1/2 my-10 
-        md:top-96 md:left-1/3 md:bottom-auto my-16
-        md:-translate-y-1/2 md:translate-x-0
+        top-96 mt-10 left-1/2 -translate-x-1/2 
       "
     >
       {/* Book Repair */}

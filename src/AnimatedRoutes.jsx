@@ -27,10 +27,11 @@ import AdminOrders from "./pages/admin/AdminOrder";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminBookings from "./pages/admin/AdminBooking";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminSellerDashboard from "./pages/admin/AdminSellerDashboard"
 
 // Layouts
 import PageWrapper from "./components/PageWrapper";
-import FloatingButtons from "./components/FloatButton";
+// import FloatingButtons from "./components/FloatButton";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/LoginPage";
 import Signup from "./pages/SighUp";
@@ -45,7 +46,7 @@ export default function AnimatedRoutes({ location }) {
           element={
             <PageWrapper>
               <Home />
-              <FloatingButtons />
+              {/* <FloatingButtons /> */}
             </PageWrapper>
           }
         />
@@ -79,6 +80,7 @@ export default function AnimatedRoutes({ location }) {
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="sell" element={<AdminSellerDashboard />} />
         </Route>
       </Routes>
     </AnimatePresence>

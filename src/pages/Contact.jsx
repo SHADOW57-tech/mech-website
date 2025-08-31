@@ -23,8 +23,8 @@ export default function Contact() {
   };
 
   return (
-    <section className="bg-white py-16 px-4 text-black">
-      <div className="max-w-xl mx-auto shadow-md p-8 rounded-lg border border-gray-200">
+    <section className="bg-black py-16 px-4 text-white">
+      <div className="max-w-xl mx-auto shadow-md p-8 rounded-lg border border-gray-200 bg-gray-500">
         <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">
           Contact Us
         </h2>
@@ -34,7 +34,7 @@ export default function Contact() {
             name="name"
             placeholder="Your Name"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full bg-slate-700 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={formData.name}
             onChange={handleChange}
           />
@@ -43,7 +43,7 @@ export default function Contact() {
             name="phone"
             placeholder="Phone Number"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full bg-slate-700 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={formData.phone}
             onChange={handleChange}
           />
@@ -52,7 +52,7 @@ export default function Contact() {
             name="email"
             placeholder="Email Address"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full bg-slate-700 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={formData.email}
             onChange={handleChange}
           />
@@ -61,7 +61,7 @@ export default function Contact() {
             placeholder="Your Message"
             rows="4"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full bg-slate-700 border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             value={formData.message}
             onChange={handleChange}
           ></textarea>

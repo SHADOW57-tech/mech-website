@@ -14,7 +14,7 @@ function AppContent() {
 
   return (
     <>
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
       {!isAdminPage && <Navbar />}
       <AnimatePresence mode="wait" initial={false}>
         <AnimatedRoutes location={location} />

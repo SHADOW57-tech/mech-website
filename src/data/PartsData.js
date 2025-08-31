@@ -6,24 +6,31 @@ import AmbulanceLight from "../images/Ambiance-light1.jpg";
 import frontGLEupgrade from "../images/front-GLE-upgrade.jpg";
 import Headlamp1 from "../images/E350-2014-headlamp-750k.jpg";
 import Headlamp2 from "../images/GLA-2019-head-light-800k.jpg";
+import Airfilter from "../images/air-filter.png"
+import Oilfilter from "../images/oil-filter.png"
+import Battery from "../images/battery.png"
+import Wipperblade from "../images/wipper-blade.png"
+import Brakepad from "../images/break-pad.png"
+import Sparkplug from "../images/spark-plug.png"
+import Fuelpump from "../images/fuel-pump.png"
 
 
  const allParts = [
-    { id: 1, name: "Brake Pads", price: 12000, image: "/images/brake-pads.jpg", type: "Brakes" },
+    { id: 1, name: "Brake Pads", price: 12000, image: Brakepad, type: "Brakes" },
     {id: 2, name: "steering wheel", price: 1000000, image:Sterring1, type: "Interior"},
     {id: 51, name: "steering wheel", price: 1100000, image:Sterring2, type: "interor"},
     {id: 52, name: "steering wheel", price: 1000000, image:Sterring3, type: "interior"},
     {id: 53, name: "steering wheel", price: 1100000, image:Sterring4, type: "interior"},
     {id: 54, name: "Ambiance light", desc:"for GLC/C300 2015/E350 2017/CLA", price: 650000, image:AmbulanceLight, type: "interior"},
     {id:55, name:"front GLE upgrade", price:1000000, image:frontGLEupgrade, type: "exterior"},
-    { id: 56, name: "Oil Filter", price: 5500, image: "/images/oil-filter.jpg", type: "Engine" },
+    { id: 56, name: "Oil Filter", price: 5500, image:Oilfilter, type: "Engine" },
     {id: 57, name: "E350 2014 headlamp 750k", price:750000, image:Headlamp1},
     {id: 58, name: "GLA 2019 head light 800k", price:800000, image:Headlamp2},
-    { id: 3, name: "Air Filter", price: 6200, image: "/images/air-filter.jpg", type: "Engine" },
-    { id: 4, name: "Battery", price: 45000, image: "/images/battery.jpg", type: "Electrical" },
-    { id: 5, name: "Wiper Blades", price: 3000, image: "/images/wiper.jpg", type: "Exterior" },
-    { id: 6, name: "Spark Plug", price: 2800, image: "/images/spark-plug.jpg", type: "Engine" },
-    { id: 7, name: "Fuel Pump", price: 18000, image: "/images/fuel-pump.jpg", type: "Fuel System" },
+    { id: 3, name: "Air Filter", price: 6200, image: Airfilter, type: "Engine" },
+    { id: 4, name: "Battery", price: 45000, image: Battery, type: "Electrical" },
+    { id: 5, name: "Wiper Blades", price: 3000, image: Wipperblade, type: "Exterior" },
+    { id: 6, name: "Spark Plug", price: 2800, image: Sparkplug, type: "Engine" },
+    { id: 7, name: "Fuel Pump", price: 18000, image: Fuelpump, type: "Fuel System" },
     { id: 8, name: "Timing Belt", price: 10000, image: "/images/timing-belt.jpg", type: "Engine" },
     { id: 9, name: "Radiator", price: 25000, image: "/images/radiator.jpg", type: "Cooling System" },
     { id: 10, name: "Headlight Bulb", price: 1500, image: "/images/headlight-bulb.jpg", type: "Electrical" },

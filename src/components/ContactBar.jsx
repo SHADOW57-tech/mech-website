@@ -17,14 +17,13 @@ export default function ContactForm() {
     e.preventDefault();
     console.log("Contact form submitted:", formData);
     alert("Message sent successfully!");
-    // TODO: Send to backend or email service (like EmailJS or Firebase)
     setFormData({ name: "", phone: "", email: "", message: "" });
   };
 
   return (
-    <section className="bg-white py-16 px-4 text-black">
-      <div className="max-w-xl mx-auto shadow-md p-8 rounded-lg border border-gray-200">
-        <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">
+    <section className="bg-gray-50 py-16 px-4">
+      <div className="max-w-xl mx-auto shadow-lg p-8 rounded-2xl border border-gray-100 bg-white">
+        <h2 className="text-3xl font-extrabold text-red-600 mb-6 text-center">
           Contact Us
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -33,7 +32,7 @@ export default function ContactForm() {
             name="name"
             placeholder="Your Name"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
             value={formData.name}
             onChange={handleChange}
           />
@@ -42,7 +41,7 @@ export default function ContactForm() {
             name="phone"
             placeholder="Phone Number"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
             value={formData.phone}
             onChange={handleChange}
           />
@@ -51,7 +50,7 @@ export default function ContactForm() {
             name="email"
             placeholder="Email Address"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
             value={formData.email}
             onChange={handleChange}
           />
@@ -60,13 +59,13 @@ export default function ContactForm() {
             placeholder="Your Message"
             rows="4"
             required
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
             value={formData.message}
             onChange={handleChange}
           ></textarea>
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded font-semibold transition"
+            className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white py-3 rounded-lg font-semibold shadow-md transition"
           >
             Send Message
           </button>

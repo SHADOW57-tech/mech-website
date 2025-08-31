@@ -1,9 +1,9 @@
 import React from "react";
 import HeroSection from "../components/HeroSection";
-
 import Footer from "../components/Footer";
 import BookAndOrder from "./BookAndOrder";
 import PartsGrid from "../components/PartsGrid";
+import FloatingButtons from "../components/FloatButton"; 
 
 export default function Home() {
   return (
@@ -11,7 +11,9 @@ export default function Home() {
       <HeroSection />
       <BookAndOrder />
       <PartsGrid />
-      <Footer/>
+      <Footer />
+
+      <FloatingButtons />
     </>
   );
 }

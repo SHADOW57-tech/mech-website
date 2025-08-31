@@ -106,7 +106,7 @@ export default function RepairForm() {
   };
 
   return (
-    <section className="py-16 px-4 bg-white text-black max-w-xl mx-auto">
+    <section className="py-16 px-4 bg-gray-500 text-white max-w-xl mx-auto">
       <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">Book a Repair</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -114,7 +114,7 @@ export default function RepairForm() {
           type="text"
           name="name"
           placeholder="Full Name"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.name}
           onChange={handleChange}
         />
@@ -124,7 +124,7 @@ export default function RepairForm() {
           type="tel"
           name="phone"
           placeholder="Phone Number"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.phone}
           onChange={handleChange}
         />
@@ -134,7 +134,7 @@ export default function RepairForm() {
           type="text"
           name="address"
           placeholder="Home Address"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.address}
           onChange={handleChange}
         />
@@ -144,7 +144,7 @@ export default function RepairForm() {
           type="text"
           name="carModel"
           placeholder="Car Model / Year"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.carModel}
           onChange={handleChange}
         />
@@ -152,7 +152,7 @@ export default function RepairForm() {
 
         <select
           name="issueType"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.issueType}
           onChange={handleChange}
         >
@@ -167,7 +167,7 @@ export default function RepairForm() {
         <textarea
           name="issueDesc"
           placeholder="Describe the issue"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           rows={4}
           value={formData.issueDesc}
           onChange={handleChange}
@@ -179,7 +179,7 @@ export default function RepairForm() {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full border rounded px-2 py-1"
+            className="w-full border rounded px-2 py-1 bg-yellow-500 hover:bg-yellow-700 cursor-pointer"
           />
           {imagePreview && (
             <div className="mt-2">
