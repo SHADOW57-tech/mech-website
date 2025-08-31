@@ -3,44 +3,16 @@ import { useCart } from "../contexts/CartContext";
 import { gsap } from "gsap";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-<<<<<<< HEAD
-import  {useProducts}  from "../contexts/ProductContext";
-import allData from "../data/PartsData"; // Your original array
-=======
 import allData from "../data/PartsData";
->>>>>>> 78947e9 (new update)
 
 export default function Parts() {
   const { addToCart, cart } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
-  const [uploadedParts, setUploadedParts] = useState([]);
   const sectionRef = useRef(null);
   const cartRef = useRef(null);
-<<<<<<< HEAD
-  const { products } = useProducts(); // These are products from Sell page
-   // Combine with original parts
 
-  // Fetch seller-uploaded items from localStorage
-  useEffect(() => {
-    const savedUploads = JSON.parse(localStorage.getItem("uploadedParts")) || [];
-    setUploadedParts(savedUploads);
-  }, []);
-=======
->>>>>>> 78947e9 (new update)
-
-  // Combine original parts with uploaded ones
-const combinedParts = [
-  ...allData,         // original array from PartsData
-  ...products,        // products from Sell page
-  ...uploadedParts    // seller-uploaded items from localStorage
-];
-// Remove duplicates by id (keep the first occurrence)
-const uniqueParts = Array.from(
-  new Map(combinedParts.map(part => [part.id, part])).values()
-);
-  // Filter based on search
-  const filteredParts = uniqueParts.filter((part) =>
-part.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredParts = allData.filter((part) =>
+    part.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -59,7 +31,7 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
 
   const handleAddToCart = (part) => {
     addToCart({ ...part, quantity: 1 });
-    toast.success(`${part.name} successfully added to cart`);
+    toast.success(`${part.name} is successfully added to cart`);
     if (cartRef.current) {
       gsap.fromTo(
         cartRef.current,
@@ -81,11 +53,7 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
           <input
             type="text"
             placeholder="Search parts..."
-<<<<<<< HEAD
-            className="w-full max-w-md mx-auto border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-=======
             className="w-full  border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#B22222]"
->>>>>>> 78947e9 (new update)
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -96,11 +64,7 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
           {filteredParts.map((part) => (
             <div
               key={`${part.id}-${part.name}`}
-<<<<<<< HEAD
-              className="bg-white rounded-xl shadow p-4 transition-transform duration-300 transform hover:scale-105"
-=======
               className="bg-black text-white rounded-xl shadow-md p-4 transition-transform duration-300 transform hover:scale-105"
->>>>>>> 78947e9 (new update)
             >
               <Link to={`/parts/${part.id}`} className="block w-full">
                 <img
@@ -108,26 +72,16 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
                   alt={part.name}
                   className="w-full h-40 object-cover rounded transition-transform duration-300 hover:scale-105"
                 />
-<<<<<<< HEAD
-                <h3 className="text-lg font-semibold mt-4 text-gray-800">{part.name}</h3>
-                <p className="text-red-600 font-bold mt-1">
-                  ₦{Number(part.price).toLocaleString()}
-=======
                 <h3 className="text-lg font-semibold mt-4 text-gray-100">
                   {part.name}
                 </h3>
                 <p className="text-[#B22222] font-bold mt-1">
                   ₦{part.price.toLocaleString()}
->>>>>>> 78947e9 (new update)
                 </p>
               </Link>
               <button
                 onClick={() => handleAddToCart(part)}
-<<<<<<< HEAD
-                className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
-=======
                 className="mt-4 bg-[#B22222] hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
->>>>>>> 78947e9 (new update)
               >
                 Add to Cart
               </button>

@@ -13,6 +13,7 @@ import Wipperblade from "../images/wipper-blade.png"
 import Brakepad from "../images/break-pad.png"
 import Sparkplug from "../images/spark-plug.png"
 import Fuelpump from "../images/fuel-pump.png"
+import Radiator from "../images/radiator.png"
 
 
  const allParts = [
@@ -32,7 +33,7 @@ import Fuelpump from "../images/fuel-pump.png"
     { id: 6, name: "Spark Plug", price: 2800, image: Sparkplug, type: "Engine" },
     { id: 7, name: "Fuel Pump", price: 18000, image: Fuelpump, type: "Fuel System" },
     { id: 8, name: "Timing Belt", price: 10000, image: "/images/timing-belt.jpg", type: "Engine" },
-    { id: 9, name: "Radiator", price: 25000, image: "/images/radiator.jpg", type: "Cooling System" },
+    { id: 9, name: "Radiator", price: 25000, image: Radiator, type: "Cooling System" },
     { id: 10, name: "Headlight Bulb", price: 1500, image: "/images/headlight-bulb.jpg", type: "Electrical" },
     { id: 11, name: "Tail Light Bulb", price: 1200, image: "/images/tail-light-bulb.jpg", type: "Electrical" },
     { id: 12, name: "Brake Fluid", price: 2500, image: "/images/brake-fluid.jpg", type: "Brakes" },
