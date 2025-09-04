@@ -1,7 +1,6 @@
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
 const cors = require("cors")({ origin: true });
-const fetch = require("node-fetch");
 
 // ✅ Secure environment variables
 const apikey = functions.config().callmebot.key;
@@ -19,11 +18,18 @@ const transporter = nodemailer.createTransport({
 
 exports.sendOrderAlerts = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
+    res.set("Access-Control-Allow-Origin", "*"); // ✅ fixes CORS error
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+      return res.status(204).send(""); // preflight response
+    }
+
     try {
       const orderData = req.body;
 
       const adminNumbers = ["+2348012345678", "+2348023456789"];
-      const adminEmails = ["admin1@example.com", "admin2@example.com"];
+      const adminEmails = ["Nwobupeter2021@gmail.Com", "lightlucky775@gmail.com"];
 
       if (!orderData || !orderData.orderId) {
         return res.status(400).json({ error: "Invalid order data" });
@@ -38,19 +44,23 @@ exports.sendOrderAlerts = functions.https.onRequest((req, res) => {
 📍 Address: ${orderData.deliveryAddress || "N/A"}
 🕒 ${new Date().toLocaleString()}`;
 
-      // === 1. Send WhatsApp alerts to Admins ===
+      // === 1. Send WhatsApp alerts ===
       for (const phone of adminNumbers) {
         const whatsappURL = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(
           phone
         )}&text=${encodeURIComponent(message)}&apikey=${apikey}`;
 
-        const resp = await fetch(whatsappURL);
-        const resultText = await resp.text();
+        try {
+          const resp = await fetch(whatsappURL);
+          const resultText = await resp.text();
 
-        if (!resp.ok) {
-          console.error(`❌ WhatsApp failed for ${phone}: ${resultText}`);
-        } else {
-          console.log(`✅ WhatsApp alert sent to ${phone}`);
+          if (!resp.ok) {
+            console.error(`❌ WhatsApp failed for ${phone}: ${resultText}`);
+          } else {
+            console.log(`✅ WhatsApp alert sent to ${phone}`);
+          }
+        } catch (error) {
+          console.error(`❌ WhatsApp request failed for ${phone}:`, error);
         }
       }
 
@@ -72,7 +82,7 @@ exports.sendOrderAlerts = functions.https.onRequest((req, res) => {
       await transporter.sendMail(adminMailOptions);
       console.log("✅ Admin email alerts sent");
 
-      // === 3. Send Confirmation Email to Customer ===
+      // === 3. Customer Confirmation Email ===
       if (orderData.customerEmail) {
         const customerMailOptions = {
           from: `"Shop Team" <${gmailUser}>`,

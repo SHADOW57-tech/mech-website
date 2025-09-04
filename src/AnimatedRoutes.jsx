@@ -19,7 +19,6 @@ import MyOrders from "./pages/MyOrder";
 import SelectPayment from "./pages/SelectPayment";
 import Success from "./pages/Success";
 import ProductDetail from "./pages/ProductDetail";
-import Sell from "./pages/Sell";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
@@ -31,10 +30,9 @@ import AdminSellerDashboard from "./pages/admin/AdminSellerDashboard"
 
 // Layouts
 import PageWrapper from "./components/PageWrapper";
-// import FloatingButtons from "./components/FloatButton";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/LoginPage";
-import Signup from "./pages/SighUp";
+import Signup from "./pages/SignUp";
 
 export default function AnimatedRoutes({ location }) {
   return (
@@ -65,7 +63,6 @@ export default function AnimatedRoutes({ location }) {
         <Route path="/success" element={<PageWrapper><Success /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
-        <Route path="/sell" element={<PageWrapper><Sell /></PageWrapper>} />
 
         {/* Admin Routes */}
         <Route
