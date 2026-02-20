@@ -7,6 +7,7 @@ import { CartProvider } from "./contexts/CartContext";
 import Navbar from "./components/Navbar";
 import AnimatedRoutes from "./AnimatedRoutes";
 import { Toaster } from "react-hot-toast";
+import Footer from "./components/Footer";
 
 function AppContent() {
   const location = useLocation();
@@ -14,11 +15,17 @@ function AppContent() {
 
   return (
     <>
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
+
       {!isAdminPage && <Navbar />}
+
+      {/* Only animate page routes */}
       <AnimatePresence mode="wait" initial={false}>
-        <AnimatedRoutes location={location} />
+        <AnimatedRoutes location={location} key={location.pathname} />
       </AnimatePresence>
+
+      {/* Universal Footer (outside animation) */}
+      {!isAdminPage && <Footer />}
     </>
   );
 }

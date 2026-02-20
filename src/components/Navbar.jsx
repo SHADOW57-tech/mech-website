@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -9,25 +9,42 @@ export default function Navbar() {
   const badgeRef = useRef(null);
   const headerRef = useRef(null);
   const location = useLocation();
-
-  useEffect(() => {
-    gsap.fromTo(
-      headerRef.current,
-      { y: -20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }
-    );
-  }, []);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const cartCount = Array.isArray(cart)
     ? cart.reduce((acc, item) => acc + (item.quantity || item.qty || 1), 0)
     : 0;
 
+  // 🔥 Initial entrance animation
+  useEffect(() => {
+    gsap.fromTo(
+      headerRef.current,
+      { y: -40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+    );
+  }, []);
+
+  // 🔥 Scroll shrink effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // 🔥 Cart badge bounce
   useEffect(() => {
     if (cartCount > 0 && badgeRef.current) {
       gsap.fromTo(
         badgeRef.current,
-        { scale: 0.8, opacity: 0.6 },
-        { scale: 1.2, opacity: 1, duration: 0.3, ease: "bounce.out" }
+        { scale: 0.7 },
+        { scale: 1.2, duration: 0.3, ease: "back.out(3)" }
       );
     }
   }, [cartCount]);
@@ -36,30 +53,47 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "Book", href: "/book" },
     { name: "Parts", href: "/parts" },
-    { name: "Orders", href: "/my-orders" },
     { name: "Contact", href: "/contact" },
-    { name: "Sell", href: "/sell" },
   ];
 
   return (
     <>
-      {/* Top desktop navbar */}
-      <header ref={headerRef} className="bg-black text-white shadow-md sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3">
-          <Link to="/" className="text-2xl font-bold text-red-600">
+      {/* Desktop Navbar */}
+      <header
+        ref={headerRef}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-black/80 backdrop-blur-md py-2 shadow-lg"
+            : "bg-black py-4"
+        }`}
+      >
+        <div className="container mx-auto flex items-center justify-between px-4">
+          <Link
+            to="/"
+            className={`font-bold transition-all duration-300 ${
+              isScrolled ? "text-xl" : "text-2xl"
+            } text-red-600`}
+          >
             SIR P AUTO
           </Link>
 
-          {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center gap-6 text-base font-medium">
+          <nav className="hidden md:flex items-center gap-8 text-base font-medium">
             {navLinks.map((link) => (
-              <Link key={link.name} to={link.href} className="hover:text-red-500 transition">
+              <Link
+                key={link.name}
+                to={link.href}
+                className={`relative transition ${
+                  location.pathname === link.href
+                    ? "text-red-500"
+                    : "hover:text-red-500"
+                }`}
+              >
                 {link.name}
               </Link>
             ))}
 
             <Link to="/cart" className="relative flex items-center">
-              <ShoppingCart className="w-6 h-6 text-white hover:text-red-500 transition" />
+              <ShoppingCart className="w-6 h-6 hover:text-red-500 transition" />
               {cartCount > 0 && (
                 <span
                   ref={badgeRef}
@@ -73,19 +107,22 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Fixed bottom nav bar for mobile only */}
+      {/* Mobile Bottom Navbar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 text-white flex justify-around items-center py-2 z-50 md:hidden">
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.href}
-            className={`flex-1 text-center text-sm hover:text-red-500 ${
-              location.pathname === link.href ? "text-red-500 font-semibold" : ""
+            className={`flex-1 text-center text-sm transition ${
+              location.pathname === link.href
+                ? "text-red-500 font-semibold"
+                : "hover:text-red-500"
             }`}
           >
             {link.name}
           </Link>
         ))}
+
         <Link
           to="/cart"
           className="flex-1 text-center text-sm relative hover:text-red-500"
@@ -101,6 +138,9 @@ export default function Navbar() {
           )}
         </Link>
       </nav>
+
+      {/* Spacer so content doesn’t hide behind fixed navbar */}
+      <div className="h-50"></div>
     </>
   );
 }

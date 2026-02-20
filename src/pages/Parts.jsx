@@ -1,39 +1,38 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useCart } from "../contexts/CartContext";
 import { gsap } from "gsap";
-import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
-import  {useProducts}  from "../contexts/ProductContext";
-import allData from "../data/PartsData"; // Your original array
+import { Link, useNavigate } from "react-router-dom";
+import { useProducts } from "../contexts/ProductContext";
+import allData from "../data/PartsData";
 
 export default function Parts() {
-  const { addToCart, cart } = useCart();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [uploadedParts, setUploadedParts] = useState([]);
   const sectionRef = useRef(null);
-  const cartRef = useRef(null);
-  const { products } = useProducts(); // These are products from Sell page
-   // Combine with original parts
+  const { products } = useProducts();
 
   // Fetch seller-uploaded items from localStorage
   useEffect(() => {
-    const savedUploads = JSON.parse(localStorage.getItem("uploadedParts")) || [];
+    const savedUploads =
+      JSON.parse(localStorage.getItem("uploadedParts")) || [];
     setUploadedParts(savedUploads);
   }, []);
 
   // Combine original parts with uploaded ones
-const combinedParts = [
-  ...allData,         // original array from PartsData
-  ...products,        // products from Sell page
-  ...uploadedParts    // seller-uploaded items from localStorage
-];
-// Remove duplicates by id (keep the first occurrence)
-const uniqueParts = Array.from(
-  new Map(combinedParts.map(part => [part.id, part])).values()
-);
+  const combinedParts = [
+    ...allData,
+    ...products,
+    ...uploadedParts,
+  ];
+
+  // Remove duplicates by id
+  const uniqueParts = Array.from(
+    new Map(combinedParts.map((part) => [part.id, part])).values()
+  );
+
   // Filter based on search
   const filteredParts = uniqueParts.filter((part) =>
-part.name.toLowerCase().includes(searchTerm.toLowerCase())
+    part.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -44,22 +43,11 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, []);
 
-  const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
-    0
-  );
-
-  const handleAddToCart = (part) => {
-    addToCart({ ...part, quantity: 1 });
-    toast.success("Item added successfully to cart!");
-    if (cartRef.current) {
-      gsap.fromTo(
-        cartRef.current,
-        { scale: 1 },
-        { scale: 1.1, duration: 0.15, yoyo: true, repeat: 1, ease: "power1.out" }
-      );
-    }
+  // 🔥 Redirect to Contact Page instead of adding to cart
+  const handleContactRedirect = (part) => {
+    navigate("/contact", {
+      state: { part },
+    });
   };
 
   return (
@@ -93,35 +81,23 @@ part.name.toLowerCase().includes(searchTerm.toLowerCase())
                   alt={part.name}
                   className="w-full h-40 object-cover rounded transition-transform duration-300 hover:scale-105"
                 />
-                <h3 className="text-lg font-semibold mt-4 text-gray-800">{part.name}</h3>
+                <h3 className="text-lg font-semibold mt-4 text-gray-800">
+                  {part.name}
+                </h3>
                 <p className="text-red-600 font-bold mt-1">
                   ₦{Number(part.price).toLocaleString()}
                 </p>
               </Link>
+
               <button
-                onClick={() => handleAddToCart(part)}
+                onClick={() => handleContactRedirect(part)}
                 className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full transition-colors duration-300"
               >
-                Add to Cart
+                Contact Seller
               </button>
             </div>
           ))}
         </div>
-
-        {/* Floating Cart Info */}
-        {cart.length > 0 && (
-          <div
-            ref={cartRef}
-            className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 bg-white shadow-xl px-6 py-3 rounded-full flex items-center gap-4 border"
-          >
-            <span className="text-sm font-medium text-gray-700">
-              🛒 {totalItems} item{totalItems > 1 ? "s" : ""}
-            </span>
-            <span className="text-sm font-semibold text-green-600">
-              ₦{totalAmount.toLocaleString()}
-            </span>
-          </div>
-        )}
       </div>
     </section>
   );
