@@ -4,8 +4,8 @@ import { CreditCard, Home, Banknote } from "lucide-react";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { db, serverTimestamp, auth } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { db,  auth } from "../firebase";
+import { addDoc,serverTimestamp, collection } from "firebase/firestore";
 import toast from "react-hot-toast";
 import { sendOrderEmail } from "../utility/SendOrderEmail";
 import { onAuthStateChanged } from "firebase/auth";
@@ -205,7 +205,7 @@ export default function Checkout() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="text-white max-w-2xl mx-auto p-8">
       <h2 className="text-2xl font-bold text-red-600 mb-6">Checkout</h2>
 
       <ul className="space-y-4">
@@ -262,7 +262,7 @@ export default function Checkout() {
           <textarea
             placeholder="Enter delivery address"
             rows={3}
-            className="w-full p-2 mt-2 border rounded focus:outline-none"
+            className="w-full p-2 mt-2 border rounded focus:outline-none bg-slate-700"
             value={deliveryAddress}
             onChange={(e) => setDeliveryAddress(e.target.value)}
           />

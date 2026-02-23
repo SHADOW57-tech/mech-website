@@ -1,9 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* index.css or App.css */
+
 body {
-  @apply bg-gray-300 text-white;
+  background: #000;
 }
 html, body {
   margin: 0;

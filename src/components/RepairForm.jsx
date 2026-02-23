@@ -47,31 +47,31 @@ export default function RepairForm() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+    e.preventDefault();
+    if (!validate()) return;
 
-  try {
-    let imageUrl = "";
-    if (image) {
-      const imageRef = ref(storage, `repair_images/${Date.now()}-${image.name}`);
-      await uploadBytes(imageRef, image);
-      imageUrl = await getDownloadURL(imageRef);
+    try {
+      let imageUrl = "";
+      if (image) {
+        const imageRef = ref(storage, `repair_images/${Date.now()}-${image.name}`);
+        await uploadBytes(imageRef, image);
+        imageUrl = await getDownloadURL(imageRef);
+      }
+
+      await addDoc(collection(db, "bookings"), {
+        ...formData,
+        imageUrl,
+        createdAt: serverTimestamp(),
+      });
+
+      navigate("/booking-success");
+    } catch (err) {
+      console.error("Error submitting booking:", err);
     }
-
-    await addDoc(collection(db, "bookings"), {
-      ...formData,
-      imageUrl,
-      createdAt: serverTimestamp(),
-    });
-
-    navigate("/booking-success");
-  } catch (err) {
-    console.error("Error submitting booking:", err);
-  }
-};
+  };
 
   return (
-    <section className="py-16 px-4 bg-white text-black max-w-xl mx-auto">
+    <section className="py-16 px-4 bg-gary-500 text-black max-w-xl mx-auto">
       <h2 className="text-2xl font-bold text-red-600 mb-6 text-center">
         Book a Repair
       </h2>
@@ -81,7 +81,7 @@ export default function RepairForm() {
           type="text"
           name="name"
           placeholder="Full Name"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.name}
           onChange={handleChange}
         />
@@ -91,7 +91,7 @@ export default function RepairForm() {
           type="tel"
           name="phone"
           placeholder="Phone Number"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.phone}
           onChange={handleChange}
         />
@@ -101,7 +101,7 @@ export default function RepairForm() {
           type="text"
           name="carModel"
           placeholder="Car Model / Year"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.carModel}
           onChange={handleChange}
         />
@@ -111,7 +111,7 @@ export default function RepairForm() {
 
         <select
           name="issueType"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           value={formData.issueType}
           onChange={handleChange}
         >
@@ -128,7 +128,7 @@ export default function RepairForm() {
         <textarea
           name="issueDesc"
           placeholder="Describe the issue"
-          className="w-full border px-4 py-2 rounded"
+          className="w-full border px-4 py-2 rounded bg-slate-700"
           rows={4}
           value={formData.issueDesc}
           onChange={handleChange}
@@ -141,14 +141,14 @@ export default function RepairForm() {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full border rounded px-2 py-1"
+            className="w-full border rounded px-2 py-1 bg-yellow-500 hover:bg-yellow-700 cursor-pointer"
           />
           {imagePreview && (
             <div className="mt-2">
               <img
                 src={imagePreview}
                 alt="Issue Preview"
-                className="w-full max-h-52 object-cover rounded border"
+                className="w-full max-h-52 object-cover rounded border "
               />
               <button
                 type="button"
@@ -164,9 +164,10 @@ export default function RepairForm() {
           )}
         </div>
 
+        {/* ✅ Updated Bright Button */}
         <button
           type="submit"
-          className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded w-full"
+          className="bg-[#FF3B3B] hover:bg-red-700 hover:shadow-red-400/40 text-white px-6 py-3 rounded w-full font-semibold shadow-md transition"
         >
           Submit Repair Request
         </button>

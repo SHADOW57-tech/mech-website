@@ -19,7 +19,6 @@ import MyOrders from "./pages/MyOrder";
 import SelectPayment from "./pages/SelectPayment";
 import Success from "./pages/Success";
 import ProductDetail from "./pages/ProductDetail";
-import Sell from "./pages/Sell";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashBoard";
@@ -27,13 +26,13 @@ import AdminOrders from "./pages/admin/AdminOrder";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminBookings from "./pages/admin/AdminBooking";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminSellerDashboard from "./pages/admin/AdminSellerDashboard"
 
 // Layouts
 import PageWrapper from "./components/PageWrapper";
-import FloatingButtons from "./components/FloatButton";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/LoginPage";
-import Signup from "./pages/SighUp";
+import Signup from "./pages/SignUp";
 
 export default function AnimatedRoutes({ location }) {
   return (
@@ -45,7 +44,7 @@ export default function AnimatedRoutes({ location }) {
           element={
             <PageWrapper>
               <Home />
-              <FloatingButtons />
+              {/* <FloatingButtons /> */}
             </PageWrapper>
           }
         />
@@ -64,7 +63,6 @@ export default function AnimatedRoutes({ location }) {
         <Route path="/success" element={<PageWrapper><Success /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
-        <Route path="/sell" element={<PageWrapper><Sell /></PageWrapper>} />
 
         {/* Admin Routes */}
         <Route
@@ -79,6 +77,7 @@ export default function AnimatedRoutes({ location }) {
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="sell" element={<AdminSellerDashboard />} />
         </Route>
       </Routes>
     </AnimatePresence>

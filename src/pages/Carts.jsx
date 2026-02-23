@@ -71,7 +71,7 @@ const decreaseQty = (id) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <section className="px-4 py-16 bg-white text-black max-w-3xl mx-auto">
+      <section className="px-4 py-16 bg-gray-500 text-white max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-red-600 mb-6">Your Cart</h2>
 
         {cart.length === 0 ? (
@@ -107,7 +107,7 @@ const decreaseQty = (id) => {
                     <div className="flex items-center gap-2 mt-2">
                       <button
                         onClick={() => decreaseQty(item.id)}
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                        className="px-2 py-1 bg-slate-700 rounded hover:bg-gray-300"
                       >
                         -
                       </button>
@@ -116,7 +116,7 @@ const decreaseQty = (id) => {
                       </span>
                       <button
                         onClick={() => increaseQty(item.id)}
-                        className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                        className="px-2 py-1 bg-slate-700 rounded hover:bg-gray-300"
                       >
                         +
                       </button>
@@ -139,7 +139,7 @@ const decreaseQty = (id) => {
                 clearCart();
                 toast.success("Cart cleared!");
               }}
-              className="w-full bg-gray-200 hover:bg-gray-300 text-sm py-2 rounded mt-4"
+              className="w-full bg-slate-700 hover:bg-gray-300 text-sm py-2 rounded mt-4"
             >
               Clear Cart
             </button>
@@ -150,7 +150,7 @@ const decreaseQty = (id) => {
               <select
                 value={deliveryLocation}
                 onChange={(e) => setDeliveryLocation(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded bg-slate-700 "
               >
                 <option value="Lagos">Lagos</option>
                 <option value="Abuja">Abuja</option>
@@ -162,7 +162,7 @@ const decreaseQty = (id) => {
                 value={exactAddress}
                 onChange={(e) => setExactAddress(e.target.value)}
                 rows={3}
-                className="w-full p-2 border rounded resize-none"
+                className="w-full p-2 border rounded resize-none bg-slate-700"
                 placeholder="Enter house number, street, landmarks, etc."
               />
             </div>

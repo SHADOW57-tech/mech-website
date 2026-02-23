@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "mechanic-project-b0250"
-  }
+    "default": "mechanic-website-b21f5"
+  },
+  "targets": {},
+  "etags": {}
 }

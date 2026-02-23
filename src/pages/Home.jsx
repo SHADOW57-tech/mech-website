@@ -3,10 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import allData from "../data/PartsData";
+import Floatbutton from "../components/Floatbutton";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+
   const heroRef = useRef(null);
   const carRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -29,25 +31,33 @@ export default function Home() {
     },
   ];
 
+
   useEffect(() => {
-    // Hero entrance with motion blur effect
+
+    // Hero animation
     gsap.fromTo(
       heroRef.current,
-      { opacity: 0, filter: "blur(10px)", y: 50 },
-      { opacity: 1, filter: "blur(0px)", y: 0, duration: 1.2, ease: "power3.out" }
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }
     );
 
+
     // Floating car animation
-    gsap.to(carRef.current, {
-      y: -15,
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-    });
+    if (carRef.current) {
+      gsap.to(carRef.current, {
+        y: -15,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+      });
+    }
+
 
     // Scroll animations
     sectionRefs.current.forEach((section) => {
+      if (!section) return;
+
       gsap.fromTo(
         section,
         { opacity: 0, y: 60 },
@@ -63,34 +73,44 @@ export default function Home() {
       );
     });
 
-    // Testimonial auto slide
+
+    // Testimonial slider
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) =>
         prev === testimonials.length - 1 ? 0 : prev + 1
       );
     }, 4000);
 
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+
   }, []);
+
+
 
   return (
     <div className="bg-black text-white overflow-hidden">
 
-      {/* ================= HERO ================= */}
+      {/* HERO */}
       <section
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center text-center px-6"
       >
-        {/* Parallax Background */}
+
+        {/* Background */}
         <div
-          className="absolute inset-0 bg-fixed bg-center bg-cover opacity-20"
+          className="absolute inset-0 bg-fixed bg-center bg-cover opacity-80"
           style={{
             backgroundImage:
               "url('https://images.unsplash.com/photo-1503376780353-7e6692767b70')",
           }}
-        ></div>
+        />
 
         <div className="relative z-10 max-w-4xl">
+
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
             Premium <span className="text-red-600">Auto Parts</span>
           </h1>
@@ -100,9 +120,10 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex gap-4 justify-center">
+
             <Link
               to="/parts"
-              className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg transition-all hover:scale-105"
+              className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg transition hover:scale-105"
             >
               Shop Now
             </Link>
@@ -113,74 +134,105 @@ export default function Home() {
             >
               Contact Us
             </Link>
+
           </div>
+
         </div>
+
 
         {/* Floating Car */}
         <img
           ref={carRef}
           src="https://pngimg.com/uploads/car/car_PNG1667.png"
           alt="Car"
-          className="absolute bottom-10 w-96 opacity-90"
+          className="absolute bottom-10 w-80 md:w-96 opacity-90"
         />
+
       </section>
 
-      {/* ================= FEATURED PRODUCTS ================= */}
+
+
+      {/* FEATURED PARTS */}
       <section
         ref={(el) => (sectionRefs.current[0] = el)}
         className="py-20 px-6 bg-gray-900"
       >
+
         <h2 className="text-4xl font-bold text-center mb-12">
           Featured Parts
         </h2>
 
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+
           {featuredParts.map((part) => (
+
             <div
               key={part.id}
-              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition-transform"
+              className="bg-gray-800 p-6 rounded-xl hover:scale-105 transition"
             >
+
               <img
                 src={part.image}
                 alt={part.name}
-                className="h-32 object-cover mx-auto"
+                className="h-32 object-contain mx-auto"
               />
-              <h4 className="mt-4 font-semibold">{part.name}</h4>
+
+              <h4 className="mt-4 font-semibold">
+                {part.name}
+              </h4>
+
               <p className="text-red-500 font-bold mt-2">
                 ₦{Number(part.price).toLocaleString()}
               </p>
+
             </div>
+
           ))}
+
         </div>
+
       </section>
 
-      {/* ================= TESTIMONIAL SLIDER ================= */}
+
+
+      {/* TESTIMONIALS */}
       <section
         ref={(el) => (sectionRefs.current[1] = el)}
-        className="py-20 px-6 bg-black text-center"
+        className="py-20 px-6 text-center"
       >
+
         <h2 className="text-4xl font-bold mb-10">
-          What Our Customers Say
+          What Customers Say
         </h2>
 
+
         <div className="max-w-3xl mx-auto transition-all duration-700">
+
           <p className="text-xl text-gray-300 italic">
             "{testimonials[currentTestimonial].text}"
           </p>
+
           <h4 className="mt-6 text-red-500 font-bold">
             - {testimonials[currentTestimonial].name}
           </h4>
+
         </div>
+
       </section>
 
-      {/* ================= CTA ================= */}
+
+
+      {/* CTA */}
       <section
         ref={(el) => (sectionRefs.current[2] = el)}
-        className="py-20 bg-gradient-to-r from-red-700 to-red-600 text-center px-60"
+        className="py-20 px-6 bg-gradient-to-r from-red-700 to-red-600 text-center"
       >
+
         <h2 className="text-4xl font-bold mb-6">
           Ready to Upgrade Your Ride?
         </h2>
+
 
         <Link
           to="/parts"
@@ -188,7 +240,10 @@ export default function Home() {
         >
           Browse Parts Now
         </Link>
+
       </section>
+       <Floatbutton/>
+
     </div>
   );
 }

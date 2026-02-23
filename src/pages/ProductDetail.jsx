@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import allParts from "../data/PartsData";
 import toast from "react-hot-toast";
+import Parts from "./Parts";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function ProductDetail() {
           <button
             onClick={() => {
               addToCart({ ...product, quantity: 1 });
-              toast.success("Added to cart!");
+              toast.success(`${product.name} successfully added to cart`);
             }}
             className="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-md transition duration-300"
           >
