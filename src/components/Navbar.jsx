@@ -63,8 +63,8 @@ export default function Navbar() {
         ref={headerRef}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-black/80 backdrop-blur-md py-2 shadow-lg"
-            : "bg-black py-4"
+            ? "bg-gray-900/80 backdrop-blur-md py-2 shadow-lg"
+            : "bg-gray-700 py-4"
         }`}
       >
         <div className="container mx-auto flex items-center justify-between px-4">
@@ -82,7 +82,7 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 to={link.href}
-                className={`relative transition ${
+                className={`relative transition text-white ${
                   location.pathname === link.href
                     ? "text-red-500"
                     : "hover:text-red-500"
