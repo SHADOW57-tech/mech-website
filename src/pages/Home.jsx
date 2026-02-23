@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import allData from "../data/PartsData";
-import Floatbutton from "../components/Floatbutton";
+import Floatbutton from "../src/components/Floatbutton";
 
 gsap.registerPlugin(ScrollTrigger);
 
