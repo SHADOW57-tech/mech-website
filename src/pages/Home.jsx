@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import allData from "../data/PartsData";
-import Floatbutton from "../src/components/Floatbutton";
+import FloatingButtons from "../components/FloatButton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -242,7 +242,7 @@ export default function Home() {
         </Link>
 
       </section>
-       <Floatbutton/>
+       <FloatingButtons/>
 
     </div>
   );
